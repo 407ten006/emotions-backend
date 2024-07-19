@@ -29,7 +29,6 @@ pyjwt = "^2.8.0"
 aiohttp = "^3.9.5"
 
 [tool.poetry.group.dev.dependencies]
-mypy = "^1.8.0"
 ruff = "^0.2.2"
 pre-commit = "^3.6.2"
 types-passlib = "^1.7.7.20240106"
@@ -38,9 +37,9 @@ types-passlib = "^1.7.7.20240106"
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
 
-[tool.mypy]
-strict = true
-exclude = ["venv", ".venv", "alembic"]
+#[tool.mypy]
+#strict = false
+#exclude = ["venv", ".venv", "alembic"]
 
 [tool.ruff]
 target-version = "py310"

@@ -77,6 +77,10 @@ class Settings(BaseSettings):
     FIRST_SUPERUSER_PASSWORD: str
     USERS_OPEN_REGISTRATION: bool = False
 
+    # Naver Soical
+    NAVER_CLIENT_ID: str
+    NAVER_CLIENT_SECRET_ID: str
+
     def _check_default_secret(self, var_name: str, value: str | None) -> None:
         if value == "changethis":
             message = (

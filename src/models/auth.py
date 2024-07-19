@@ -1,6 +1,11 @@
 from sqlmodel import Field, SQLModel
 
 
+class NaverLoginData(SQLModel):
+    code: str
+    state: str
+
+
 class AuthToken(SQLModel):
     access_token: str
     token_type: str = "bearer"
