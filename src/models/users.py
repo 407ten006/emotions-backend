@@ -1,45 +1,45 @@
+from datetime import datetime
+from enum import Enum
+
 from pydantic import EmailStr
 from sqlmodel import Field, SQLModel
+
+from src.utils.utils import utc_now
+
+
+class SocialProvider(Enum):
+    naver = "naver"
 
 
 class UserBase(SQLModel):
     email: EmailStr = Field(unique=True, index=True, max_length=255)
-    is_active: bool = True
-    is_superuser: bool = False
-    full_name: str | None = Field(default=None, max_length=255)
+    phone_number: str | None = Field(default=None, max_length=20)
+    is_active: bool = Field(default=True)
+    service_policy_agreement: bool = Field(default=False)
+    privacy_policy_agreement: bool = Field(default=False)
+    third_party_information_agreement: bool = Field(default=False)
+    nickname: str | None = Field(default=None, max_length=20)
+    social_provider: SocialProvider = Field(default=SocialProvider.naver)
+    joined_datetime: datetime = Field(default_factory=utc_now)
 
 
-# Properties to receive via API on creation
+#
 class UserCreate(UserBase):
-    password: str = Field(min_length=8, max_length=40)
-
-
-class UserRegister(SQLModel):
-    email: EmailStr = Field(max_length=255)
-    password: str = Field(min_length=8, max_length=40)
-    full_name: str | None = Field(default=None, max_length=255)
-
-
-# Properties to receive via API on update, all are optional
-class UserUpdate(UserBase):
-    email: EmailStr | None = Field(default=None, max_length=255)  # type: ignore
-    password: str | None = Field(default=None, min_length=8, max_length=40)
+    social_provider: SocialProvider = Field(default=SocialProvider.naver)
+    joined_datetime: datetime = Field(default_factory=utc_now)
 
 
 class UserUpdateMe(SQLModel):
-    full_name: str | None = Field(default=None, max_length=255)
-    email: EmailStr | None = Field(default=None, max_length=255)
-
-
-class UpdatePassword(SQLModel):
-    current_password: str = Field(min_length=8, max_length=40)
-    new_password: str = Field(min_length=8, max_length=40)
+    nickname: str | None = Field(default=None, max_length=20)
+    service_policy_agreement: bool | None = Field(default=None)
+    privacy_policy_agreement: bool | None = Field(default=None)
+    third_party_information_agreement: bool | None = Field(default=None)
+    updated_datetime: datetime = Field(default_factory=utc_now)
 
 
 # Database model, database table inferred from class name
 class User(UserBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    hashed_password: str
 
 
 # Properties to return via API, id is always required

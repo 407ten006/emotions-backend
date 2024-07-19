@@ -1,4 +1,4 @@
-from sqlmodel import Field, SQLModel
+from sqlmodel import SQLModel
 
 
 class NaverLoginData(SQLModel):
@@ -12,9 +12,5 @@ class AuthToken(SQLModel):
 
 
 class AuthTokenPayload(SQLModel):
-    sub: int | None = None
-
-
-class NewPassword(SQLModel):
-    token: str
-    new_password: str = Field(min_length=8, max_length=40)
+    sub: str | None = None
+    exp: int | None = None
