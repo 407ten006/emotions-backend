@@ -1,6 +1,6 @@
 from typing import Any
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 
 from src.api.v1.deps import CurrentUser, SessionDep
 from src.cruds import users as users_crud
@@ -23,10 +23,6 @@ def update_user_me(session: SessionDep, current_user: CurrentUser, user_update: 
     Update current user.
     """
 
-    if user_update.nickname is not None and users_crud.is_already_exist_nickname(session=session,
-                                                                                 nickname=user_update.nickname):
-        raise HTTPException(status_code=400, detail="Nickname is already exist.")
-
     users_crud.update_user(session=session, user=current_user, user_update=user_update)
 
     return current_user
@@ -37,4 +33,5 @@ def check_nickname(session: SessionDep, nickname: str) -> Any:
     """
     Check nickname is already exist.
     """
+    # TODO: 비속어 필터 적용
     return {"is_exist": users_crud.is_already_exist_nickname(session=session, nickname=nickname)}
