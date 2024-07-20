@@ -2,9 +2,8 @@ import json
 from typing import Any
 
 from fastapi import APIRouter, Query, Request, HTTPException
-from typing import Any
 
-from api.clova_model_api import CompletionExecutor
+from src.api.clova_model_api import CompletionExecutor
 from src.api.v1.deps import CurrentUser
 
 router = APIRouter()
@@ -31,15 +30,12 @@ def get_diaries(current_user: CurrentUser, month: int = Query(), date_type: str 
 
 @router.post("/")
 def create_diary(current_user: CurrentUser) -> Any:
-
     """
     
     1. Model API 호출
     2. API가 올바를 경우 값을 Emotions과 Diary를 DB에 넣기
     3. 만들어진 Map 2개를 Return
     """
-
-
 
     return {}
 
