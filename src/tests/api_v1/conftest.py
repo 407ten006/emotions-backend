@@ -1,7 +1,7 @@
 import asyncio
-from collections.abc import AsyncGenerator
 
 import pytest
+from asgi_lifespan import LifespanManager
 from httpx import AsyncClient
 
 from src.main import app
@@ -22,6 +22,7 @@ def pytest_sessionfinish():
 
 
 @pytest.fixture(scope="function")
-async def async_client() -> AsyncGenerator[AsyncClient, None]:
-    async with AsyncClient(app=app, base_url="http://localhost") as ac:
-        yield ac
+async def async_client():
+    async with LifespanManager(app):
+        async with AsyncClient(app=app, base_url="http://localhost") as ac:
+            yield ac

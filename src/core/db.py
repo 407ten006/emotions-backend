@@ -1,7 +1,7 @@
 from sqlmodel import Session, create_engine
 
-from models.emotions import Emotion
 from src.core.config import settings
+from src.models.emotions import Emotion
 from src.models.test import Test
 from src.models.users import User, Diary
 
