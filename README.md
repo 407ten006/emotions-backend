@@ -41,6 +41,21 @@ $ docker run -d \
 postgres:12
 ```
 
+### 마이그레이션
+
+```
+$ alembic revision --autogenerate -m "commit message"
+$ alembic upgrade head
+```
+
+```
+# 임시로 core/db.py 에 추가된 모델을 등록해야합니다.
+
+def init_db(session: Session) -> None:
+    User.metadata.create_all(engine)
+    Test.metadata.create_all(engine)
+```
+
 ## 프로젝트 구조
 
 ```
