@@ -58,3 +58,13 @@ def get_monthly_report(current_user: CurrentUser, month: int) -> Any:
     월간 감정 분석
     """
     return {}
+
+
+@router.post("/clova-test")
+def clova_test(memo: str) -> Any:
+    """
+    클로바 테스트
+
+    """
+    # 클로바 API 분석
+    return {'result': ""}
