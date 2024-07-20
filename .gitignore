@@ -8,5 +8,3 @@ htmlcov
 .venv
 .idea
 
-
-poetry.lock
