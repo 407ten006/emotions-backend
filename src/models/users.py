@@ -1,5 +1,6 @@
 from datetime import datetime
 from enum import Enum
+from typing import Optional
 
 from pydantic import EmailStr
 from sqlmodel import Field, SQLModel
@@ -50,3 +51,9 @@ class UserPublic(UserBase):
 class UsersPublic(SQLModel):
     data: list[UserPublic]
     count: int
+
+class Diary(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    content: str = Field(...)
+    choosen_emotion: Optional[int] = Field(...)
+    created_date: datetime = Field(default_factory=utc_now)

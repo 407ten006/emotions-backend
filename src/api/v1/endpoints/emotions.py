@@ -32,6 +32,8 @@ def create_diary(current_user: CurrentUser) -> Any:
     다이어리 생성 & 분석
     """
 
+
+
     return {}
 
 
