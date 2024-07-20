@@ -1,4 +1,5 @@
 import logging
+from contextlib import asynccontextmanager
 
 import sentry_sdk
 from fastapi import FastAPI
@@ -21,10 +22,31 @@ def custom_generate_unique_id(route: APIRoute) -> str:
 if settings.SENTRY_DSN and settings.ENVIRONMENT != "local":
     sentry_sdk.init(dsn=str(settings.SENTRY_DSN), enable_tracing=True)
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("Initializing service")
+    try:
+        with Session(engine) as session:
+            # Try to create session to check if DB is awake
+            session.exec(select(1))
+            init_db(session)
+    except Exception as e:
+        logger.error(e)
+        raise e
+
+    logger.info("Service finished initializing")
+
+    yield
+
+    logger.info("Service is shutting down")
+
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
     generate_unique_id_function=custom_generate_unique_id,
+    lifespan=lifespan,
 )
 
 # Set all CORS enabled origins
@@ -40,19 +62,3 @@ if settings.BACKEND_CORS_ORIGINS:
     )
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
-
-
-@app.on_event("startup")
-async def on_app_start() -> None:
-    """Anything that needs to be done while app starts"""
-    logger.info("Initializing service")
-    try:
-        with Session(engine) as session:
-            # Try to create session to check if DB is awake
-            session.exec(select(1))
-            init_db(session)
-    except Exception as e:
-        logger.error(e)
-        raise e
-
-    logger.info("Service finished initializing")
