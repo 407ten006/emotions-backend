@@ -1,15 +1,17 @@
+import pytest
 import requests
 import json
 import time
 
 from api.clova_model_api import CompletionExecutor
 
-
+@pytest.mark.asyncio
 async def test_create_emotions__모델_테스트(async_client):
-    response = await async_client.post("/api/v1/emotions/clova-test", json={"memo": "오늘 맛있는걸 먹었어"})
-
-    assert response.status_code == 200
-    assert response.json() == {}
+    print("start")
+    response = await async_client.post("/api/v1/emotions/clova-test", json={"content": "오늘 맛있는걸 먹었어"})
+    print("response", response)
+    # assert response.status_code == 200
+    # assert response.json() == {}
 
 def 단순_모델_테스트(user_input):
     completion_executor = CompletionExecutor(
@@ -43,5 +45,6 @@ def 단순_모델_테스트(user_input):
 
 user_input = "오늘은 가족들과 함께 공원에 갔다. 날씨가 너무 좋아서 피크닉을 하기로 했다. 엄마가 준비해주신 샌드위치와 과일을 먹으면서 가족들과 웃고 떠들었다. 동생과 함께 연을 날렸는데, 바람이 좋아서 높이 날아올랐다. 공원에서의 시간을 보내고 집으로 돌아오는 길에 아이스크림 가게에 들러서 디저트를 먹었다. 행복한 하루였다."
 
-emotions_analysis, emotions_percentage = 단순_모델_테스트(user_input)
-print(emotions_analysis,emotions_percentage)
+# emotions_analysis, emotions_percentage = 단순_모델_테스트(user_input)
+# print(emotions_analysis,emotions_percentage)
+

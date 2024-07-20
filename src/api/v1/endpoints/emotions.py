@@ -1,7 +1,7 @@
 from typing import Any
 
-from fastapi import APIRouter, Query
-
+from fastapi import APIRouter, Query, Request, HTTPException
+from typing import Any
 from src.api.v1.deps import CurrentUser
 
 router = APIRouter()
@@ -27,7 +27,15 @@ def get_diaries(current_user: CurrentUser, month: int = Query(), date_type: str 
 
 
 @router.post("/")
-def create_diary(current_user: CurrentUser) -> Any:
+def create_diary(request: Request,current_user: CurrentUser) -> Any:
+
+    try:
+        body = request.json()
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Invalid JSON")
+    content = body.get("content")
+
+    print(f"Diary content: {content}")
     """
     다이어리 생성 & 분석
     """
