@@ -9,14 +9,17 @@ from src.core.exceptions import InvalidAuthorizationCode, InvalidToken
 from src.core.oauth_client import OAuthClient
 from src.cruds import users as users_crud
 from src.models.auth import AuthToken, NaverLoginData
-from src.models.users import SocialProvider, UserCreate
+from src.models.users import SocialProviderEnum, UserCreate
 
 router = APIRouter()
 
 
 @router.post("/naver-login")
-async def naver_login(login_data: NaverLoginData, session: SessionDep,
-                      oauth_client: OAuthClient = Depends(get_oauth_client)):
+async def naver_login(
+    login_data: NaverLoginData,
+    session: SessionDep,
+    oauth_client: OAuthClient = Depends(get_oauth_client),
+):
     try:
         token_data = await oauth_client.get_tokens(login_data.code, login_data.state)
     except InvalidAuthorizationCode:
@@ -33,7 +36,7 @@ async def naver_login(login_data: NaverLoginData, session: SessionDep,
             "profile_image": user_info["profile_image"],
             "age": user_info["age"],
             "birthday": user_info["birthday"],
-            "gender": user_info["gender"]
+            "gender": user_info["gender"],
         }
 
     except InvalidToken:
@@ -42,14 +45,19 @@ async def naver_login(login_data: NaverLoginData, session: SessionDep,
     user = users_crud.get_user_by_email(session=session, email=user_data["email"])
 
     if not user:
-        user = users_crud.create_user(session=session, user_create=UserCreate(
-            email=user_data["email"],
-            phone_number=user_data["mobile"],
-            social_provider=SocialProvider.naver,
-        ))
+        user = users_crud.create_user(
+            session=session,
+            user_create=UserCreate(
+                email=user_data["email"],
+                phone_number=user_data["mobile"],
+                social_provider=SocialProviderEnum.naver,
+            ),
+        )
 
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    jwt_token = security.create_access_token(user.email, expires_delta=access_token_expires)
+    jwt_token = security.create_access_token(
+        user.id, expires_delta=access_token_expires
+    )
 
     return AuthToken(
         access_token=jwt_token,

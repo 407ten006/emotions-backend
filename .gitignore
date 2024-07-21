@@ -10,3 +10,4 @@ htmlcov
 
 .env
 .env.production
+!/src/tests/db.sqlite

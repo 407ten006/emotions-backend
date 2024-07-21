@@ -1,15 +1,31 @@
-from datetime import datetime
-
-from sqlmodel import Field,SQLModel
-from typing import Optional
-from src.utils.utils import utc_now
+from sqlmodel import Field, SQLModel
 
 
-class Emotion(SQLModel, table=True):
+class EmotionBase(SQLModel):
+    name: str = Field(..., max_length=20)
+    description: str = Field(..., max_length=300)
+
+
+class EmotionCreate(SQLModel):
+    name: str = Field(..., max_length=20)
+    description: str = Field(..., max_length=300)
+
+
+class EmotionUpdate(SQLModel):
+    name: str | None = Field(None, max_length=20)
+    description: str | None = Field(None, max_length=300)
+
+
+class Emotion(EmotionBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    diary_id: int = Field(foreign_key="diary.id", index=True)
-    emotion: str
-    content: str
-    created_date: datetime = Field(default_factory=utc_now)
-    percent: Optional[float]=Field(default=None)
+    name: str = Field(..., max_length=20)
+    description: str = Field(..., max_length=300)
 
+
+class EmotionPublic(EmotionBase):
+    id: int
+
+
+class EmotionsPublic(SQLModel):
+    data: list[EmotionPublic]
+    count: int

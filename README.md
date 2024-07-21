@@ -28,7 +28,7 @@ $ export PYTHONPATH=$PYTHONPATH:$(pwd)/src
 
 ### Local Postgres Docker 실행
 
-```angular2html
+```
 $ docker run -d \
 --name postgres-container \
 --restart always \
@@ -55,6 +55,10 @@ def init_db(session: Session) -> None:
     User.metadata.create_all(engine)
     Test.metadata.create_all(engine)
 ```
+
+### 테스트 실행
+
+- 환경변수 `ENVIORNMENT=test` 로 설정 후 실행해야 테스트 데이터베이스를 사용합니다. (sqlite)
 
 ## 프로젝트 구조
 

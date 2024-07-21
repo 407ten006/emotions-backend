@@ -9,12 +9,12 @@ from .exceptions import InvalidAuthorizationCode, InvalidToken
 
 class OAuthClient:
     def __init__(
-            self,
-            client_id: str,
-            client_secret_id: str,
-            authentication_uri: str,
-            resource_uri: str,
-            verify_uri: str,
+        self,
+        client_id: str,
+        client_secret_id: str,
+        authentication_uri: str,
+        resource_uri: str,
+        verify_uri: str,
     ) -> None:
         self._client_id = client_id
         self._client_secret_id = client_secret_id
@@ -50,8 +50,9 @@ class OAuthClient:
                 "grant_type": "authorization_code",
                 "code": code,
                 "state": state,
-            }
+            },
         )
+
         if tokens is None:
             raise InvalidAuthorizationCode
 

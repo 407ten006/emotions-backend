@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
+import json
 
 import requests
-import json
-import time
 
 
 class CompletionExecutor:
@@ -16,23 +14,27 @@ class CompletionExecutor:
         complete_message = []
         parsed_data = None
         headers = {
-            'X-NCP-CLOVASTUDIO-API-KEY': self._api_key,
-            'X-NCP-APIGW-API-KEY': self._api_key_primary_val,
-            'X-NCP-CLOVASTUDIO-REQUEST-ID': self._request_id,
-            'Content-Type': 'application/json; charset=utf-8',
-            'Accept': 'text/event-stream'
+            "X-NCP-CLOVASTUDIO-API-KEY": self._api_key,
+            "X-NCP-APIGW-API-KEY": self._api_key_primary_val,
+            "X-NCP-CLOVASTUDIO-REQUEST-ID": self._request_id,
+            "Content-Type": "application/json; charset=utf-8",
+            "Accept": "text/event-stream",
         }
         flag = False
-        with requests.post(self._host + '/testapp/v1/chat-completions/HCX-003',
-                           headers=headers, json=completion_request, stream=True) as r:
+        with requests.post(
+            self._host + "/testapp/v1/chat-completions/HCX-003",
+            headers=headers,
+            json=completion_request,
+            stream=True,
+        ) as r:
             for line in r.iter_lines():
                 decoded_line = line.decode("utf-8")
                 if line:
                     if flag:
                         data = json.loads(decoded_line[5:])
-                        parsed_data = data['message']['content']
+                        parsed_data = data["message"]["content"]
                         flag = False
-                    if (decoded_line == "event:result"):
+                    if decoded_line == "event:result":
                         flag = True
 
             # print(complete_message)
@@ -43,4 +45,4 @@ class CompletionExecutor:
                     parsed_data = json.loads(parsed_data)
                 emotion_analysis = parsed_data.get("감정 분석", {})
                 emotion_percentages = parsed_data.get("감정 퍼센트", {})
-                return emotion_analysis,emotion_percentages
+                return emotion_analysis, emotion_percentages

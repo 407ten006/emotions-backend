@@ -1,32 +1,29 @@
 from datetime import datetime
-from enum import Enum
-from typing import Optional
 
 from pydantic import EmailStr
 from sqlmodel import Field, SQLModel
 
+from src.core.enums import SocialProviderEnum
 from src.utils.utils import utc_now
-
-
-class SocialProvider(Enum):
-    naver = "naver"
 
 
 class UserBase(SQLModel):
     email: EmailStr = Field(unique=True, index=True, max_length=255)
-    phone_number: str | None = Field(default=None, max_length=20)
+    phone_number: str = Field(..., max_length=20)
     is_active: bool = Field(default=True)
     service_policy_agreement: bool = Field(default=False)
     privacy_policy_agreement: bool = Field(default=False)
     third_party_information_agreement: bool = Field(default=False)
     nickname: str | None = Field(default=None, max_length=20)
-    social_provider: SocialProvider = Field(default=SocialProvider.naver)
-    joined_datetime: datetime = Field(default_factory=utc_now)
+    social_provider: SocialProviderEnum = Field(default=SocialProviderEnum.naver)
+    joined_datetime: datetime
 
 
-#
-class UserCreate(UserBase):
-    social_provider: SocialProvider = Field(default=SocialProvider.naver)
+class UserCreate(SQLModel):
+    email: EmailStr = Field(..., max_length=255)
+    phone_number: str = Field(..., max_length=20)
+    is_active: bool = Field(default=True)
+    social_provider: SocialProviderEnum = Field(default=SocialProviderEnum.naver)
     joined_datetime: datetime = Field(default_factory=utc_now)
 
 
@@ -38,12 +35,10 @@ class UserUpdateMe(SQLModel):
     updated_datetime: datetime = Field(default_factory=utc_now)
 
 
-# Database model, database table inferred from class name
 class User(UserBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
 
 
-# Properties to return via API, id is always required
 class UserPublic(UserBase):
     id: int
 
@@ -51,9 +46,3 @@ class UserPublic(UserBase):
 class UsersPublic(SQLModel):
     data: list[UserPublic]
     count: int
-
-class Diary(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    content: str = Field(...)
-    choosen_emotion: Optional[int] = Field(...)
-    created_date: datetime = Field(default_factory=utc_now)

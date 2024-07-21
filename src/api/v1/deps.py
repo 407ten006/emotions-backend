@@ -17,7 +17,9 @@ from src.models.auth import AuthTokenPayload
 from src.models.users import User
 
 
-def verify_jwt_token(access_token=Security(APIKeyHeader(name="Authorization", auto_error=False))) -> str:
+def verify_jwt_token(
+    access_token=Security(APIKeyHeader(name="Authorization", auto_error=False))
+) -> str:
     return access_token
 
 
@@ -31,18 +33,21 @@ TokenDep = Annotated[str, Depends(verify_jwt_token)]
 
 
 def get_current_user(session: SessionDep, token: TokenDep) -> User:
+    # TODO: Bearer 토큰으로 바꿔야함
     try:
         payload = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[security.ALGORITHM]
         )
         token_data = AuthTokenPayload(**payload)
     except (InvalidTokenError, ValidationError):
+        print("뭐여")
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Could not validate credentials",
         )
 
-    user = users_crud.get_user_by_email(session=session, email=token_data.sub)
+    user = users_crud.get_user_by_id(session=session, user_id=int(token_data.sub))
+
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 

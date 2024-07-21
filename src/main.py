@@ -9,7 +9,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from src.api.v1.router import api_router
 from src.core.config import settings
-from src.core.db import engine, init_db
+from src.core.db import init_db, engine
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -28,9 +28,8 @@ async def lifespan(app: FastAPI):
     logger.info("Initializing service")
     try:
         with Session(engine) as session:
-            # Try to create session to check if DB is awake
             session.exec(select(1))
-            init_db(session)
+            init_db(session, engine)
     except Exception as e:
         logger.error(e)
         raise e

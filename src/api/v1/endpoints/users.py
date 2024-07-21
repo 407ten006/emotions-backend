@@ -22,7 +22,6 @@ def update_user_me(session: SessionDep, current_user: CurrentUser, user_update: 
     """
     Update current user.
     """
-
     users_crud.update_user(session=session, user=current_user, user_update=user_update)
 
     return current_user
