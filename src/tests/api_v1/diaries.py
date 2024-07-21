@@ -63,7 +63,7 @@ async def test_create_diary_api(
     user_input = "안녕하세요!"
 
     response = await async_client.post(
-        f"{settings.API_V1_STR}/diaries",
+        f"{settings.API_V1_STR}/diaries/",
         headers={"Authorization": f"{login_sample_user.access_token}"},
         json={"content": user_input},
     )
