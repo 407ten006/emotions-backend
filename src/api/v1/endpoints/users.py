@@ -18,7 +18,9 @@ def read_user_me(current_user: CurrentUser) -> Any:
 
 
 @router.patch("/me", response_model=UserPublic)
-def update_user_me(session: SessionDep, current_user: CurrentUser, user_update: UserUpdateMe) -> Any:
+def update_user_me(
+    session: SessionDep, current_user: CurrentUser, user_update: UserUpdateMe
+) -> Any:
     """
     Update current user.
     """
@@ -33,4 +35,8 @@ def check_nickname(session: SessionDep, nickname: str) -> Any:
     Check nickname is already exist.
     """
     # TODO: 비속어 필터 적용
-    return {"is_exist": users_crud.is_already_exist_nickname(session=session, nickname=nickname)}
+    return {
+        "is_exist": users_crud.is_already_exist_nickname(
+            session=session, nickname=nickname
+        )
+    }

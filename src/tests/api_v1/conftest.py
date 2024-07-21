@@ -1,6 +1,7 @@
 import asyncio
+from collections.abc import Generator
 from datetime import timedelta
-from typing import Generator, Any
+from typing import Any
 
 import pytest
 from asgi_lifespan import LifespanManager
@@ -9,7 +10,7 @@ from sqlmodel import Session, SQLModel
 
 from src.core import security
 from src.core.config import settings
-from src.core.db import init_db, engine
+from src.core.db import engine, init_db
 from src.core.enums import SocialProviderEnum
 from src.main import app
 from src.models import User

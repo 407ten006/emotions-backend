@@ -5,9 +5,9 @@ from src.models.monthly_report import MonthlyReport
 from src.models.users import User
 
 __all__ = (
-    'User',
-    'Diary',
-    'EmotionReact',
-    'Emotion',
-    'MonthlyReport',
+    "User",
+    "Diary",
+    "EmotionReact",
+    "Emotion",
+    "MonthlyReport",
 )

@@ -29,9 +29,7 @@ def get_today_diary(
 
 
 @router.get("/")
-def get_diaries(
-    current_user: CurrentUser, search_date_yymm: str = Query()
-) -> Any:
+def get_diaries(current_user: CurrentUser, search_date_yymm: str = Query()) -> Any:
     """
     월별 다이어리 조회
     """

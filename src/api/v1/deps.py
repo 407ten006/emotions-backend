@@ -18,7 +18,7 @@ from src.models.users import User
 
 
 def verify_jwt_token(
-    access_token=Security(APIKeyHeader(name="Authorization", auto_error=False))
+    access_token=Security(APIKeyHeader(name="Authorization", auto_error=False)),
 ) -> str:
     return access_token
 

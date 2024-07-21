@@ -2,7 +2,7 @@ from sqlalchemy import Engine, create_engine
 from sqlmodel import Session
 
 from src.core.config import settings
-from src.models import MonthlyReport, User, Diary, EmotionReact, Emotion
+from src.models import Diary, Emotion, EmotionReact, MonthlyReport, User
 
 if settings.ENVIRONMENT == "test":
     engine = create_engine(

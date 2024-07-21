@@ -5,7 +5,7 @@ from sqlmodel import Session
 from src.core.config import settings
 from src.models import User
 from src.models.auth import AuthToken
-from src.models.diaries import DiaryCreate, Diary
+from src.models.diaries import Diary, DiaryCreate
 
 pytestmark = pytest.mark.asyncio
 

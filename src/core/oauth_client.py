@@ -41,7 +41,6 @@ class OAuthClient:
                 return None if resp.status != 200 else await resp.json()
 
     async def get_tokens(self, code: str, state: str | None) -> dict:
-
         tokens = await self._request_get_to(
             url=f"{self._authentication_uri}/token",
             params={
