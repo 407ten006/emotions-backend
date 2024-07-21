@@ -5,10 +5,19 @@ class SocialProviderEnum(Enum):
     naver = "naver"
 
 
+# class EmotionEnum(Enum):
+#     passion = "passion"  # 열정
+#     joy = "joy"  # 기쁨
+#     touched = "touched"  # 감동
+#     anxiety = "anxiety"  # 불안
+#     anger = "anger"  # 버럭
+#     sadness = "sadness"  # 슬픔
+
+
 class EmotionEnum(Enum):
-    passion = "passion"  # 열정
-    joy = "joy"  # 기쁨
-    touched = "touched"  # 감동
-    anxiety = "anxiety"  # 불안
-    anger = "anger"  # 버럭
-    sadness = "sadness"  # 슬픔
+    열정이 = 1  # 열정
+    기쁨이 = 2  # 기쁨
+    감동이 = 3  # 감동
+    불안이 = 4  # 불안
+    버럭이 = 5  # 버럭
+    슬픔이 = 6  # 슬픔

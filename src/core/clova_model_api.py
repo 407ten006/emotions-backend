@@ -27,11 +27,24 @@ class CompletionExecutor:
             "Content-Type": "application/json; charset=utf-8",
             "Accept": "text/event-stream",
         }
+
+        request_data = {
+            'messages': preset_text,
+            'topP': 0.8,
+            'topK': 0,
+            'maxTokens': 256,
+            'temperature': 0.7,
+            'repeatPenalty': 1.2,
+            'stopBefore': [],
+            'includeAiFilters': True,
+            'seed': 0
+        }
         flag = False
+        parsed_data = None
         with requests.post(
             self._host + "/testapp/v1/chat-completions/HCX-003",
             headers=headers,
-            json=preset_text,
+            json=request_data,
             stream=True,
         ) as r:
             for line in r.iter_lines():
@@ -44,12 +57,13 @@ class CompletionExecutor:
                     if decoded_line == "event:result":
                         flag = True
 
-            # print(complete_message)
-            print(parsed_data)
-            if parsed_data:
-                # JSON 데이터를 파싱한 후 딕셔너리로 변환
-                if isinstance(parsed_data, str):
-                    parsed_data = json.loads(parsed_data)
-                emotion_analysis = parsed_data.get("감정 분석", {})
-                emotion_percentages = parsed_data.get("감정 퍼센트", {})
-                return emotion_analysis, emotion_percentages
+        try:
+            parsed_json = json.loads(parsed_data)
+            result = {
+                "emotions": parsed_json["감정 분석"],
+                "percentage" : parsed_json["감정 퍼센트"]
+            }
+            return result,
+        except json.JSONDecodeError as e:
+            print(f"JSONDecodeError: {e}")
+            return None

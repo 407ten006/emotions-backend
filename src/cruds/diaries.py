@@ -4,7 +4,6 @@ from sqlmodel import Session, select
 
 from models.diaries import Diary, DiaryCreate
 
-
 def get_today_diary(
     *, session: Session, user_id: int, search_date_yymmdd: str
 ) -> Diary | None:
@@ -36,6 +35,8 @@ def create_diary(*, session: Session, diary_in: DiaryCreate) -> Diary:
     session.commit()
     session.refresh(diary)
     return diary
+
+
 
 
 def update_main_emotion(*, session: Session, diary: Diary, emotion_id: int) -> Diary:

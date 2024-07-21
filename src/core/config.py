@@ -38,7 +38,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str = secrets.token_urlsafe(32)
     # 60 minutes * 24 hours * 8 days = 8 days
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
-    DOMAIN: str = "localhost"
+    DOMAIN: str = "localhost:8000"
     ENVIRONMENT: Literal["test", "local", "staging", "production"] = "local"
 
     @computed_field  # type: ignore[misc]

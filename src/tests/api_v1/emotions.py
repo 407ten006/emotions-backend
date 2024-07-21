@@ -11,7 +11,7 @@ async def test_create_emotions__모델_테스트(async_client: AsyncClient):
         "/api/v1/emotions/clova-test", json={"content": "오늘 맛있는걸 먹었어"}
     )
     # print("response", response)
-    print(emotions_analysis)
+    print(emotions_analysis)    
     # assert response.status_code == 200
     # assert response.json() == {}
 

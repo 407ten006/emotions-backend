@@ -52,3 +52,20 @@ async def test__get_today_diary__오늘_기록이_있는_경우(
     assert response_json["created_datetime"] == diary.created_datetime.isoformat()
     assert response_json["chosen_emotion_id"] is None
     assert response_json["user_id"] == sample_user.id
+
+
+async def test_create_diary_api(
+    async_client: AsyncClient,
+    sample_user: User,
+    login_sample_user: AuthToken,
+    db_session: Session,
+):
+    user_input = "안녕하세요!"
+
+    response = await async_client.post(
+        f"{settings.API_V1_STR}/diaries",
+        headers={"Authorization": f"{login_sample_user.access_token}"},
+        json={"content": user_input},
+    )
+
+    print(response)

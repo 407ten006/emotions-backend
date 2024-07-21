@@ -1,11 +1,16 @@
+import json
 from typing import Any
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, Request, HTTPException
 
 from api.v1.deps import CurrentUser, SessionDep
+from core.clova_model_api import CompletionExecutor
 from cruds import diaries as diaries_cruds
-from models.diaries import DiaryPublic
+from models.diaries import DiaryPublic,DiaryCreate
+from models.emotion_reacts import EmotionReactCreate
 from utils.utils import kst_today_yymmdd
+from cruds import emotions_reacts as emotions_reacts_cruds
+from core.enums import EmotionEnum
 
 router = APIRouter()
 
@@ -37,15 +42,79 @@ def get_diaries(current_user: CurrentUser, search_date_yymm: str = Query()) -> A
 
 
 @router.post("/")
-def create_diary(current_user: CurrentUser) -> Any:
+async def create_diary(current_user: CurrentUser, session: SessionDep, request: Request) -> Any:
     """
 
     1. Model API 호출
     2. API가 올바를 경우 값을 Emotions과 Diary를 DB에 넣기
     3. 만들어진 Map 2개를 Return
+
     """
 
-    return {}
+    try:
+        body_bytes = await request.body()
+        body = json.loads(body_bytes)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Invalid JSON")
+
+    user_input = body.get("content")
+    completion_executor = CompletionExecutor(
+        host="https://clovastudio.stream.ntruss.com",
+        api_key="NTA0MjU2MWZlZTcxNDJiY21itK49zPMot4GU4kpHHJ7YoRLzH63vIBpYq11WnRK6",
+        api_key_primary_val="K6lejdNbv4l8otvjbazmKQHVRCfoNUKlPCwz1r2q",
+        request_id="b109906c-e945-4c19-9d30-8bd62bd8f0a7",
+    )
+
+
+    response_data = completion_executor.execute(user_input)
+
+    if response_data == None:
+        return HTTPException(status_code=404, detail="Not Found")
+    emotions = response_data.get("emotions")
+    percentage = response_data.get("percentage")
+
+
+    today_yymmdd = kst_today_yymmdd()
+
+    new_diary = DiaryCreate(
+        user_id=current_user.id,
+        content = user_input,
+        created_at = today_yymmdd
+    )
+
+    create_diary = diaries_cruds.create_diary(
+        session=session,
+        diary_in=new_diary
+    )
+
+    for emotion_enum in EmotionEnum:
+        if emotion_enum.name in emotions and emotion_enum.name in percentage:
+            new_emotion_react = EmotionReactCreate(
+                diary_id=create_diary.id,
+                emotion_id = emotion_enum.value,
+                description = emotions[emotion_enum.name],
+                percentage = percentage[emotion_enum.name],
+                created_at = today_yymmdd
+            )
+            print(new_emotion_react)
+            emotions_reacts_cruds.create_emotion_react(session=session, emotion_react_in=new_emotion_react)
+
+    print(create_diary)
+
+    return {
+        "diary": create_diary,
+        "emotions": emotions,
+        "percentage": percentage,
+    }
+
+
+
+
+
+
+    ## 다이어리를 id를 참조값을 가지는 Emotions들을 db에 넣기
+
+
 
 
 @router.get("/{diary_id}")
