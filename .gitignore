@@ -11,3 +11,4 @@ htmlcov
 .env
 .env.production
 !/src/tests/test.db
+!/src/tests/api_v1/test.db
