@@ -60,12 +60,14 @@ async def test_create_diary_api(
     login_sample_user: AuthToken,
     db_session: Session,
 ):
-    user_input = "안녕하세요!"
+    user_input = "오늘은 정말 특별한 날이었다. 오랜만에 친구들과 함께 놀이공원에 갔다. 놀이기구를 타면서 모두가 신나게 웃었고, 햇살도 따뜻하게 우리를 감싸주었다. 그런데 집으로 돌아오는 길에 우산을 잃어버린 것을 알았다. 그래도 친구들과의 추억 덕분에 하루가 행복하게 마무리되었다. !"
 
     response = await async_client.post(
         f"{settings.API_V1_STR}/diaries/",
         headers={"Authorization": f"{login_sample_user.access_token}"},
         json={"content": user_input},
     )
+
+
 
     print(response)

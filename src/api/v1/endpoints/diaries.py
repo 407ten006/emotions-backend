@@ -1,4 +1,5 @@
 import json
+from decimal import Decimal
 from typing import Any
 
 from fastapi import APIRouter, Query, Request, HTTPException
@@ -44,11 +45,9 @@ def get_diaries(current_user: CurrentUser, search_date_yymm: str = Query()) -> A
 @router.post("/")
 async def create_diary(current_user: CurrentUser, session: SessionDep, request: Request) -> Any:
     """
-
     1. Model API 호출
     2. API가 올바를 경우 값을 Emotions과 Diary를 DB에 넣기
     3. 만들어진 Map 2개를 Return
-
     """
 
     try:
@@ -65,44 +64,43 @@ async def create_diary(current_user: CurrentUser, session: SessionDep, request: 
         request_id="b109906c-e945-4c19-9d30-8bd62bd8f0a7",
     )
 
-
     response_data = completion_executor.execute(user_input)
 
-    if response_data == None:
-        return HTTPException(status_code=404, detail="Not Found")
+    if response_data is None:
+        raise HTTPException(status_code=404, detail="Not Found")
+    print(response_data)
     emotions = response_data.get("emotions")
     percentage = response_data.get("percentage")
 
-
+    print(emotions)
+    print(percentage)
     today_yymmdd = kst_today_yymmdd()
 
     new_diary = DiaryCreate(
         user_id=current_user.id,
-        content = user_input,
-        created_at = today_yymmdd
+        content=user_input,
+        created_datetime=today_yymmdd
     )
 
-    create_diary = diaries_cruds.create_diary(
+    created_diary = diaries_cruds.create_diary(
         session=session,
         diary_in=new_diary
     )
 
     for emotion_enum in EmotionEnum:
         if emotion_enum.name in emotions and emotion_enum.name in percentage:
+            print(emotions[emotion_enum.name], percentage[emotion_enum.name])
             new_emotion_react = EmotionReactCreate(
-                diary_id=create_diary.id,
-                emotion_id = emotion_enum.value,
-                description = emotions[emotion_enum.name],
-                percentage = percentage[emotion_enum.name],
-                created_at = today_yymmdd
+                diary_id=created_diary.id,
+                emotion_id=emotion_enum.value,
+                content=emotions[emotion_enum.name],
+                percent=percentage[emotion_enum.name],
+                created_datetime=today_yymmdd
             )
-            print(new_emotion_react)
             emotions_reacts_cruds.create_emotion_react(session=session, emotion_react_in=new_emotion_react)
 
-    print(create_diary)
-
     return {
-        "diary": create_diary,
+        "diary": created_diary.dict(),
         "emotions": emotions,
         "percentage": percentage,
     }
