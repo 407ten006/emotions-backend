@@ -2,10 +2,10 @@ from typing import Any
 
 from fastapi import APIRouter, Query
 
-from src.api.v1.deps import CurrentUser, SessionDep
-from src.cruds import diaries as diaries_cruds
-from src.models.diaries import DiaryPublic
-from src.utils.utils import kst_today_yymmdd
+from api.v1.deps import CurrentUser, SessionDep
+from cruds import diaries as diaries_cruds
+from models.diaries import DiaryPublic
+from utils.utils import kst_today_yymmdd
 
 router = APIRouter()
 

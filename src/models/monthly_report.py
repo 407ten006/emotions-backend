@@ -2,7 +2,7 @@ from datetime import datetime
 
 from sqlmodel import Field, SQLModel
 
-from src.utils.utils import utc_now
+from utils.utils import utc_now
 
 
 class MonthlyReportBase(SQLModel):

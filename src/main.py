@@ -7,9 +7,9 @@ from fastapi.routing import APIRoute
 from sqlmodel import Session, select
 from starlette.middleware.cors import CORSMiddleware
 
-from src.api.v1.router import api_router
-from src.core.config import settings
-from src.core.db import engine, init_db
+from api.v1.router import api_router
+from core.config import settings
+from core.db import engine, init_db
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

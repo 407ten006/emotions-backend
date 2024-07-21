@@ -3,8 +3,8 @@ from datetime import datetime
 from pydantic import EmailStr
 from sqlmodel import Field, SQLModel
 
-from src.core.enums import SocialProviderEnum
-from src.utils.utils import utc_now
+from core.enums import SocialProviderEnum
+from utils.utils import utc_now
 
 
 class UserBase(SQLModel):

@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from sqlmodel import Session, select
 
-from src.models.diaries import Diary, DiaryCreate
+from models.diaries import Diary, DiaryCreate
 
 
 def get_today_diary(

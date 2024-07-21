@@ -2,9 +2,9 @@ from typing import Any
 
 from fastapi import APIRouter
 
-from src.api.v1.deps import CurrentUser, SessionDep
-from src.cruds import users as users_crud
-from src.models.users import UserPublic, UserUpdateMe
+from api.v1.deps import CurrentUser, SessionDep
+from cruds import users as users_crud
+from models.users import UserPublic, UserUpdateMe
 
 router = APIRouter()
 

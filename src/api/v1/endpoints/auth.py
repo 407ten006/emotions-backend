@@ -2,14 +2,14 @@ from datetime import timedelta
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from src.api.v1.deps import SessionDep, get_oauth_client
-from src.core import security
-from src.core.config import settings
-from src.core.exceptions import InvalidAuthorizationCode, InvalidToken
-from src.core.oauth_client import OAuthClient
-from src.cruds import users as users_crud
-from src.models.auth import AuthToken, NaverLoginData
-from src.models.users import SocialProviderEnum, UserCreate
+from api.v1.deps import SessionDep, get_oauth_client
+from core import security
+from core.config import settings
+from core.exceptions import InvalidAuthorizationCode, InvalidToken
+from core.oauth_client import OAuthClient
+from cruds import users as users_crud
+from models.auth import AuthToken, NaverLoginData
+from models.users import SocialProviderEnum, UserCreate
 
 router = APIRouter()
 

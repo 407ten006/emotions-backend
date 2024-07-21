@@ -8,13 +8,13 @@ from jwt.exceptions import InvalidTokenError
 from pydantic import ValidationError
 from sqlmodel import Session
 
-from src.core import security
-from src.core.config import settings
-from src.core.db import engine
-from src.core.oauth_client import OAuthClient, naver_client
-from src.cruds import users as users_crud
-from src.models.auth import AuthTokenPayload
-from src.models.users import User
+from core import security
+from core.config import settings
+from core.db import engine
+from core.oauth_client import OAuthClient, naver_client
+from cruds import users as users_crud
+from models.auth import AuthTokenPayload
+from models.users import User
 
 
 def verify_jwt_token(

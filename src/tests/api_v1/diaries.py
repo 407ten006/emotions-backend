@@ -2,10 +2,10 @@ import pytest
 from httpx import AsyncClient
 from sqlmodel import Session
 
-from src.core.config import settings
-from src.models import User
-from src.models.auth import AuthToken
-from src.models.diaries import Diary, DiaryCreate
+from core.config import settings
+from models import User
+from models.auth import AuthToken
+from models.diaries import Diary, DiaryCreate
 
 pytestmark = pytest.mark.asyncio
 

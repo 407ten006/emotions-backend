@@ -8,14 +8,14 @@ from asgi_lifespan import LifespanManager
 from httpx import AsyncClient
 from sqlmodel import Session, SQLModel
 
-from src.core import security
-from src.core.config import settings
-from src.core.db import engine, init_db
-from src.core.enums import SocialProviderEnum
-from src.main import app
-from src.models import User
-from src.models.auth import AuthToken
-from src.models.users import UserCreate
+from core import security
+from core.config import settings
+from core.db import engine, init_db
+from core.enums import SocialProviderEnum
+from main import app
+from models import User
+from models.auth import AuthToken
+from models.users import UserCreate
 
 
 @pytest.fixture()

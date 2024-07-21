@@ -3,8 +3,8 @@ from decimal import Decimal
 
 from sqlmodel import Field, Relationship, SQLModel
 
-from src.models import Diary
-from src.utils.utils import utc_now
+from models import Diary
+from utils.utils import utc_now
 
 
 class EmotionReactBase(SQLModel):

@@ -1,6 +1,6 @@
 from sqlmodel import Session, select
 
-from src.models.users import User, UserCreate, UserUpdateMe
+from models.users import User, UserCreate, UserUpdateMe
 
 
 def create_user(*, session: Session, user_create: UserCreate) -> User:

@@ -3,10 +3,10 @@ from typing import TYPE_CHECKING
 
 from sqlmodel import Field, Relationship, SQLModel
 
-from src.utils.utils import utc_now
+from utils.utils import utc_now
 
 if TYPE_CHECKING:
-    from src.models import EmotionReact
+    from models import EmotionReact
 
 
 class DiaryBase(SQLModel):
