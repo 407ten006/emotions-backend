@@ -6,7 +6,7 @@ from core.enums import EmotionEnum
 from cruds import diaries as diaries_cruds
 from cruds import emotions as emotions_crud
 from cruds import emotions_reacts as emotions_reacts_cruds
-from fastapi import APIRouter, Body, HTTPException, Query
+from fastapi import APIRouter, Body, HTTPException, Path, Query
 from models.diaries import (
     DiariesPublic,
     DiaryCreate,
@@ -116,7 +116,6 @@ async def create_diary(
 async def get_diary(session: SessionDep, current_user: CurrentUser, diary_id: int):
     """
     다이어리 상세 조회
-
     """
 
     diary = await diaries_cruds.get_diary_by_id(session=session, diary_id=diary_id)
@@ -129,14 +128,19 @@ async def get_diary(session: SessionDep, current_user: CurrentUser, diary_id: in
 
 @router.patch("/{diary_id}", status_code=status.HTTP_200_OK, response_model=DiaryPublic)
 async def update_diary(
-    current_user: CurrentUser, main_emotion: str = Query(None)
+    session: SessionDep, current_user: CurrentUser, diary_id:int = Path(), main_emotion_id: int = Body(...)
 ) -> Any:
     """
     오늘의 메인 감정 선택
     1. id 값으로 다이어리 조히
     2. Diary의 choosen값을 고른 값으로 설정
     """
-    return {}
+
+    diary = await diaries_cruds.get_diary_by_id(session=session, diary_id=diary_id)
+    # TODO: 리액션이 없는 감정 선택 시, 예외 처리
+    await diaries_cruds.update_main_emotion(session=session, diary=diary, emotion_id=main_emotion_id)
+
+    return diary
 
 
 @router.get("/monthly-report", status_code=status.HTTP_200_OK)
