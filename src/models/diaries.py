@@ -36,10 +36,17 @@ class Diary(DiaryBase, table=True):
     emotion_reacts: list["EmotionReact"] = Relationship(back_populates="diary")
 
 
-class DiaryPublic(DiaryBase):
+class DiaryPublic(SQLModel):
     id: int
     emotion_reacts: list[EmotionReactPublic]
 
+class DiaryMonth(SQLModel):
+    id: int
+    chosen_emotion_id: int | None = None
+    created_datetime: datetime = Field(default_factory=utc_now)
+
+class DiariesMonth(SQLModel):
+    data: list[DiaryMonth]
 
 class DiariesPublic(SQLModel):
     data: list[DiaryPublic]

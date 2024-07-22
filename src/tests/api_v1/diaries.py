@@ -5,6 +5,7 @@ from models import User
 from models.auth import AuthToken
 from models.diaries import Diary, DiaryCreate
 from sqlmodel import Session
+from utils.utils import get_kst_today_yymmdd
 
 pytestmark = pytest.mark.asyncio
 
@@ -54,6 +55,36 @@ async def test__get_today_diary__오늘_기록이_있는_경우(
     assert response_json["diary"]["content"] == "오늘의 일기"
     assert response_json["diary"]["user_id"] == sample_user.id
     assert response_json["emotions"] == []
+
+async def test_get_month_diaries(
+        async_client: AsyncClient,
+        sample_user: User,
+        login_sample_user: AuthToken,
+        db_session: Session,
+):
+    diary = Diary.from_orm(
+        DiaryCreate(
+            user_id=sample_user.id,
+            content="오늘의 일기",
+        )
+    )
+
+    db_session.add(diary)
+    db_session.commit()
+    db_session.refresh(diary)
+
+    kst_today_yymmdd = get_kst_today_yymmdd()
+
+    response = await async_client.get(
+        f"{settings.API_V1_STR}/diaries/",
+        headers={"Authorization": f"Bearer {login_sample_user.access_token}"},
+        params={"search_date_yymm": "202407"}
+
+    )
+
+    print("Response", response.json())
+
+
 
 
 async def test_create_diary_api(

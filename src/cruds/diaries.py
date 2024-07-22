@@ -27,10 +27,15 @@ async def get_today_diary(
 async def get_diaries_by_month(
     *, session: Session, user_id: int, search_date_yymm: str
 ) -> list[Diary]:
+    year = int(search_date_yymm[:4])
+    month = int(search_date_yymm[4:6])
     statement = (
         select(Diary)
-        .where(Diary.user_id == user_id)
-        .where(Diary.created_datetime == search_date_yymm)
+        .where(
+            (Diary.created_datetime >= datetime(year, month, 1)) &
+            (Diary.created_datetime < datetime(year, month + 1, 1))
+        )
+
     )
     return session.exec(statement).all()
 

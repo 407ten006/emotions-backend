@@ -12,7 +12,8 @@ from models.diaries import (
     DiaryCreate,
     DiaryCreateRequest,
     DiaryPublic,
-    TodayDiaryPublic,
+    TodayDiaryPublic, DiaryBase,
+    DiariesMonth,DiaryMonth
 )
 from models.emotion_reacts import EmotionReactCreate
 from starlette import status
@@ -49,13 +50,28 @@ async def get_today_diary(session: SessionDep, current_user: CurrentUser):
     }
 
 
-@router.get("/", status_code=status.HTTP_200_OK, response_model=DiariesPublic)
-async def get_diaries(current_user: CurrentUser, search_date_yymm: str = Query()):
+@router.get("/", status_code=status.HTTP_200_OK,response_model=DiariesMonth)
+async def get_diaries(session: SessionDep, current_user: CurrentUser, search_date_yymm: str = Query()):
     """
     월별 다이어리 조회
     """
 
-    return {}
+
+    if not search_date_yymm:
+        raise HTTPException(status_code=400, detail="Invalid search_date_yymm")
+
+
+    diaries = await diaries_cruds.get_diaries_by_month(
+        session = session,
+        user_id=current_user.id,
+        search_date_yymm=search_date_yymm,
+    )
+
+    response_data = DiariesMonth(
+        data = [DiaryMonth.from_orm(diary) for diary in diaries]
+    )
+    print(response_data)
+    return response_data
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=DiaryPublic)
