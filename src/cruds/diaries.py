@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
-from sqlmodel import Session, select
-
+from models import EmotionReact
 from models.diaries import Diary, DiaryCreate
+from sqlmodel import Session, select
 
 
 async def get_today_diary(
@@ -35,8 +35,8 @@ async def get_diaries_by_month(
     return session.exec(statement).all()
 
 
-async def create_diary(*, session: Session, diary_in: DiaryCreate) -> Diary:
-    diary = Diary.from_orm(diary_in)
+async def create_diary(*, session: Session, diary_create: DiaryCreate) -> Diary:
+    diary = Diary.from_orm(diary_create)
 
     session.add(diary)
     session.commit()
@@ -57,4 +57,9 @@ async def update_main_emotion(
 
 
 async def get_diary_by_id(*, session: Session, diary_id: int) -> Diary | None:
-    return session.get(Diary, diary_id)
+    statement = (
+        select(Diary)
+        .join(EmotionReact, isouter=True)
+        .where(Diary.id == diary_id)
+    )
+    return session.exec(statement).first()

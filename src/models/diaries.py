@@ -1,9 +1,9 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlmodel import Field, Relationship, SQLModel
-
+from models.emotion_reacts import EmotionReactPublic
 from models.emotions import EmotionPublic
+from sqlmodel import Field, Relationship, SQLModel
 from utils.utils import utc_now
 
 if TYPE_CHECKING:
@@ -23,6 +23,10 @@ class DiaryCreate(SQLModel):
     created_datetime: datetime = Field(default_factory=utc_now)
 
 
+class DiaryCreateRequest(SQLModel):
+    content: str = Field(..., max_length=300)
+
+
 class DiaryUpdate(SQLModel):
     chosen_emotion_id: int
 
@@ -34,6 +38,7 @@ class Diary(DiaryBase, table=True):
 
 class DiaryPublic(DiaryBase):
     id: int
+    emotion_reacts: list[EmotionReactPublic]
 
 
 class DiariesPublic(SQLModel):

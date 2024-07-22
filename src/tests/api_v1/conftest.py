@@ -5,17 +5,16 @@ from typing import Any
 
 import pytest
 from asgi_lifespan import LifespanManager
-from httpx import AsyncClient
-from sqlmodel import Session, SQLModel
-
 from core import security
 from core.config import settings
 from core.db import engine, init_db
 from core.enums import SocialProviderEnum
+from httpx import AsyncClient
 from main import app
 from models import User
 from models.auth import AuthToken
 from models.users import UserCreate
+from sqlmodel import Session, SQLModel
 
 
 @pytest.fixture()
@@ -36,9 +35,9 @@ async def async_client():
 
 
 @pytest.fixture()
-def db_session() -> Generator[Session, Any, None]:
+async def db_session() -> Generator[Session, Any, None]:
     with Session(engine) as session:
-        init_db(session, engine)
+        await init_db(session, engine)
         yield session
         session.rollback()
         session.close()

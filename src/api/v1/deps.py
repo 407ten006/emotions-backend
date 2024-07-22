@@ -2,19 +2,18 @@ from collections.abc import Generator
 from typing import Annotated
 
 import jwt
-from fastapi import Depends, HTTPException, Query, Security, status
-from fastapi.security.http import HTTPBearer
-from jwt.exceptions import InvalidTokenError
-from pydantic import ValidationError
-from sqlmodel import Session
-
 from core import security
 from core.config import settings
 from core.db import engine
 from core.oauth_client import OAuthClient, naver_client
 from cruds import users as users_crud
+from fastapi import Depends, HTTPException, Query, Security, status
+from fastapi.security.http import HTTPBearer
+from jwt.exceptions import InvalidTokenError
 from models.auth import AuthTokenPayload
 from models.users import User
+from pydantic import ValidationError
+from sqlmodel import Session
 
 
 def verify_jwt_token(

@@ -2,14 +2,13 @@ import logging
 from contextlib import asynccontextmanager
 
 import sentry_sdk
+from api.v1.router import api_router
+from core.config import settings
+from core.db import engine, init_db
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
 from sqlmodel import Session, select
 from starlette.middleware.cors import CORSMiddleware
-
-from api.v1.router import api_router
-from core.config import settings
-from core.db import engine, init_db
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -29,7 +28,7 @@ async def lifespan(app: FastAPI):
     try:
         with Session(engine) as session:
             session.exec(select(1))
-            init_db(session, engine)
+            await init_db(session, engine)
     except Exception as e:
         logger.error(e)
         raise e
