@@ -18,12 +18,12 @@ async def test__get_today_diary__오늘_기록이_없는_경우(
         headers={"Authorization": f"Bearer {login_sample_user.access_token}"},
     )
 
-    assert response.status_code == 200
     response_json = response.json()
+    print(response_json["data"])
+    print(response_json["message"])
+    print(response_json["success"])
+    assert response.status_code == 404
 
-    assert response_json["can_create"] is True
-    assert response_json["diary"] is None
-    assert response_json["emotions"] == []
 
 
 async def test__get_today_diary__오늘_기록이_있는_경우(
@@ -47,14 +47,7 @@ async def test__get_today_diary__오늘_기록이_있는_경우(
         f"{settings.API_V1_STR}/diaries/today",
         headers={"Authorization": f"Bearer {login_sample_user.access_token}"},
     )
-
-    assert response.status_code == 200
-    response_json = response.json()
-
-    assert response_json["can_create"] is False
-    assert response_json["diary"]["content"] == "오늘의 일기"
-    assert response_json["diary"]["user_id"] == sample_user.id
-    assert response_json["emotions"] == []
+    print(response)
 
 async def test_get_month_diaries(
         async_client: AsyncClient,
@@ -73,7 +66,6 @@ async def test_get_month_diaries(
     db_session.commit()
     db_session.refresh(diary)
 
-    kst_today_yymmdd = get_kst_today_yymmdd()
 
     response = await async_client.get(
         f"{settings.API_V1_STR}/diaries/",

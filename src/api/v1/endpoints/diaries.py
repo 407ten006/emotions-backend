@@ -1,6 +1,8 @@
+from http import HTTPStatus
 from typing import Any
 
 from api.v1.deps import CurrentUser, SessionDep
+from api.v1.global_response import create_response
 from core.clova_model_api import CompletionExecutor
 from core.enums import EmotionEnum
 from cruds import diaries as diaries_cruds
@@ -37,17 +39,23 @@ async def get_today_diary(session: SessionDep, current_user: CurrentUser):
         kst_search_date_yymmdd=kst_today_yymmdd,
     )
 
+    # print(today_diary)
     emotions = []
     if today_diary:
         emotions = [
             emotion_react.emotion for emotion_react in today_diary.emotion_reacts
         ]
+        response = {
+            "can_create": True,
+            "diary": DiaryPublic.from_orm(today_diary).dict(),
+            "emotions": emotions,
+        }
+        print(response)
+        return create_response(True, "", response, HTTPStatus.OK)
 
-    return {
-        "can_create": today_diary is None,
-        "diary": today_diary,
-        "emotions": emotions,
-    }
+    else:
+        return create_response(False,"Error",None,HTTPStatus.NOT_FOUND)
+
 
 
 @router.get("/", status_code=status.HTTP_200_OK,response_model=DiariesMonth)
@@ -161,7 +169,9 @@ async def update_diary(
 
 @router.get("/monthly-report", status_code=status.HTTP_200_OK)
 async def get_monthly_report(current_user: CurrentUser, month: int) -> Any:
+
     """
     월간 감정 분석
     """
+
     return {}

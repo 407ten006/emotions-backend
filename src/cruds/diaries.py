@@ -35,7 +35,6 @@ async def get_diaries_by_month(
             (Diary.created_datetime >= datetime(year, month, 1)) &
             (Diary.created_datetime < datetime(year, month + 1, 1))
         )
-
     )
     return session.exec(statement).all()
 
