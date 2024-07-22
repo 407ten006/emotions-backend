@@ -3,7 +3,7 @@ from typing import Annotated
 
 import jwt
 from fastapi import Depends, HTTPException, Query, Security, status
-from fastapi.security import APIKeyHeader
+from fastapi.security.http import HTTPBearer
 from jwt.exceptions import InvalidTokenError
 from pydantic import ValidationError
 from sqlmodel import Session
@@ -18,9 +18,9 @@ from models.users import User
 
 
 def verify_jwt_token(
-    access_token=Security(APIKeyHeader(name="Authorization", auto_error=False)),
+    access_token=Security(HTTPBearer(auto_error=False)),
 ) -> str:
-    return access_token
+    return access_token.credentials
 
 
 def get_db() -> Generator[Session, None, None]:
@@ -32,21 +32,19 @@ SessionDep = Annotated[Session, Depends(get_db)]
 TokenDep = Annotated[str, Depends(verify_jwt_token)]
 
 
-def get_current_user(session: SessionDep, token: TokenDep) -> User:
-    # TODO: Bearer 토큰으로 바꿔야함
+async def get_current_user(session: SessionDep, token: TokenDep) -> User:
     try:
         payload = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[security.ALGORITHM]
         )
         token_data = AuthTokenPayload(**payload)
     except (InvalidTokenError, ValidationError):
-        print("뭐여")
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Could not validate credentials",
         )
 
-    user = users_crud.get_user_by_id(session=session, user_id=int(token_data.sub))
+    user = await users_crud.get_user_by_email(session=session, email=token_data.sub)
 
     if not user:
         raise HTTPException(status_code=404, detail="User not found")

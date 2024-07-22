@@ -66,7 +66,7 @@ async def sample_user(db_session: Session):
 @pytest.fixture()
 async def login_sample_user(sample_user: User):
     jwt_token = security.create_access_token(
-        subject=sample_user.id,
+        subject=sample_user.email,
         expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
     )
 

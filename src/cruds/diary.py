@@ -1,7 +1,7 @@
-from sqlmodel import Session, select
+from sqlmodel import Session
 
 from models import Diary
 
 
-def add_diary(session: Session, diary: Diary):
-    session.add(diary);
+async def add_diary(session: Session, diary: Diary):
+    session.add(diary)

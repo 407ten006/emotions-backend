@@ -3,7 +3,7 @@ from sqlmodel import Session, select
 from models.users import User, UserCreate, UserUpdateMe
 
 
-def create_user(*, session: Session, user_create: UserCreate) -> User:
+async def create_user(*, session: Session, user_create: UserCreate) -> User:
     user = User(**user_create.dict())
 
     session.add(user)
@@ -12,16 +12,18 @@ def create_user(*, session: Session, user_create: UserCreate) -> User:
     return user
 
 
-def get_user_by_email(*, session: Session, email: str) -> User | None:
+async def get_user_by_email(*, session: Session, email: str) -> User | None:
     statement = select(User).where(User.email == email)
     return session.exec(statement).first()
 
 
-def get_user_by_id(*, session: Session, user_id: int) -> User | None:
+async def get_user_by_id(*, session: Session, user_id: int) -> User | None:
     return session.get(User, user_id)
 
 
-def update_user(*, session: Session, user: User, user_update: UserUpdateMe) -> User:
+async def update_user(
+    *, session: Session, user: User, user_update: UserUpdateMe
+) -> User:
     update_data = user_update.model_dump(exclude_unset=True)
 
     user.sqlmodel_update(update_data)
@@ -31,6 +33,6 @@ def update_user(*, session: Session, user: User, user_update: UserUpdateMe) -> U
     return user
 
 
-def is_already_exist_nickname(*, session: Session, nickname: str) -> bool:
+async def is_already_exist_nickname(*, session: Session, nickname: str) -> bool:
     statement = select(User).where(User.nickname == nickname)
     return session.exec(statement).first() is not None

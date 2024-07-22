@@ -42,10 +42,10 @@ async def naver_login(
     except InvalidToken:
         raise HTTPException(status_code=400, detail="Invalid token")
 
-    user = users_crud.get_user_by_email(session=session, email=user_data["email"])
+    user = await users_crud.get_user_by_email(session=session, email=user_data["email"])
 
     if not user:
-        user = users_crud.create_user(
+        user = await users_crud.create_user(
             session=session,
             user_create=UserCreate(
                 email=user_data["email"],
@@ -56,7 +56,7 @@ async def naver_login(
 
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     jwt_token = security.create_access_token(
-        user.id, expires_delta=access_token_expires
+        user.email, expires_delta=access_token_expires
     )
 
     return AuthToken(

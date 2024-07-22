@@ -15,11 +15,15 @@ async def test__get_today_diary__오늘_기록이_없는_경우(
 ):
     response = await async_client.get(
         f"{settings.API_V1_STR}/diaries/today",
-        headers={"Authorization": f"{login_sample_user.access_token}"},
+        headers={"Authorization": f"Bearer {login_sample_user.access_token}"},
     )
 
     assert response.status_code == 200
-    assert response.json() == None
+    response_json = response.json()
+
+    assert response_json["can_create"] is True
+    assert response_json["diary"] is None
+    assert response_json["emotions"] == []
 
 
 async def test__get_today_diary__오늘_기록이_있는_경우(
@@ -41,17 +45,16 @@ async def test__get_today_diary__오늘_기록이_있는_경우(
 
     response = await async_client.get(
         f"{settings.API_V1_STR}/diaries/today",
-        headers={"Authorization": f"{login_sample_user.access_token}"},
+        headers={"Authorization": f"Bearer {login_sample_user.access_token}"},
     )
 
     assert response.status_code == 200
     response_json = response.json()
 
-    assert response_json["id"] == diary.id
-    assert response_json["content"] == diary.content
-    assert response_json["created_datetime"] == diary.created_datetime.isoformat()
-    assert response_json["chosen_emotion_id"] is None
-    assert response_json["user_id"] == sample_user.id
+    assert response_json["can_create"] is False
+    assert response_json["diary"]["content"] == "오늘의 일기"
+    assert response_json["diary"]["user_id"] == sample_user.id
+    assert response_json["emotions"] == []
 
 
 async def test_create_diary_api(
@@ -64,10 +67,8 @@ async def test_create_diary_api(
 
     response = await async_client.post(
         f"{settings.API_V1_STR}/diaries/",
-        headers={"Authorization": f"{login_sample_user.access_token}"},
+        headers={"Authorization": f"Bearer {login_sample_user.access_token}"},
         json={"content": user_input},
     )
-
-
 
     print(response)

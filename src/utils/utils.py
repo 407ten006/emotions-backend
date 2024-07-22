@@ -11,5 +11,5 @@ def kst_now():
     return datetime.now().replace(tzinfo=tz.tzlocal())
 
 
-def kst_today_yymmdd():
+def get_kst_today_yymmdd():
     return kst_now().strftime("%Y%m%d")

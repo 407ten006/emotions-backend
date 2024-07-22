@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 
 from sqlmodel import Field, Relationship, SQLModel
 
+from models.emotions import EmotionPublic
 from utils.utils import utc_now
 
 if TYPE_CHECKING:
@@ -38,3 +39,9 @@ class DiaryPublic(DiaryBase):
 class DiariesPublic(SQLModel):
     data: list[DiaryPublic]
     count: int
+
+
+class TodayDiaryPublic(SQLModel):
+    can_create: bool
+    diary: DiaryPublic | None
+    emotions: list[EmotionPublic]

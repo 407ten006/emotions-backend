@@ -1,42 +1,45 @@
-from typing import Any
-
-from fastapi import APIRouter
+from fastapi import APIRouter, Body
+from starlette import status
 
 from api.v1.deps import CurrentUser, SessionDep
 from cruds import users as users_crud
-from models.users import UserPublic, UserUpdateMe
+from models.users import UserPublic, UserUpdateMe, CheckNicknamePublic
 
 router = APIRouter()
 
 
-@router.get("/me", response_model=UserPublic)
-def read_user_me(current_user: CurrentUser) -> Any:
+@router.get("/me", status_code=status.HTTP_200_OK, response_model=UserPublic)
+async def read_user_me(current_user: CurrentUser):
     """
-    Get current user.
+    내 정보 조회
     """
     return current_user
 
 
-@router.patch("/me", response_model=UserPublic)
-def update_user_me(
-    session: SessionDep, current_user: CurrentUser, user_update: UserUpdateMe
-) -> Any:
+@router.patch("/me", status_code=status.HTTP_200_OK, response_model=UserPublic)
+async def update_user_me(
+    session: SessionDep,
+    current_user: CurrentUser,
+    user_update: UserUpdateMe = Body(...),
+):
     """
-    Update current user.
+    내 정보 업데이트
     """
-    users_crud.update_user(session=session, user=current_user, user_update=user_update)
+    await users_crud.update_user(
+        session=session, user=current_user, user_update=user_update
+    )
 
     return current_user
 
 
-@router.post("/check-nickname")
-def check_nickname(session: SessionDep, nickname: str) -> Any:
+@router.post(
+    "/check-nickname",
+    status_code=status.HTTP_200_OK,
+    response_model=CheckNicknamePublic,
+)
+async def check_nickname(session: SessionDep, nickname: str):
     """
-    Check nickname is already exist.
+    유효한 닉네임 확인
     """
     # TODO: 비속어 필터 적용
-    return {
-        "is_exist": users_crud.is_already_exist_nickname(
-            session=session, nickname=nickname
-        )
-    }
+    return CheckNicknamePublic(is_valid=True)

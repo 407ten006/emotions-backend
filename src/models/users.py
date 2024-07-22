@@ -46,3 +46,7 @@ class UserPublic(UserBase):
 class UsersPublic(SQLModel):
     data: list[UserPublic]
     count: int
+
+
+class CheckNicknamePublic(SQLModel):
+    is_valid: bool
