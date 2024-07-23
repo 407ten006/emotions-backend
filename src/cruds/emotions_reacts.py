@@ -1,7 +1,6 @@
-from sqlmodel import Session
-
 from models import EmotionReact
 from models.emotion_reacts import EmotionReactCreate
+from sqlmodel import Session
 
 
 async def create_emotion_react(

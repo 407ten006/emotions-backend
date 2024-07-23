@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from sqlmodel import Field, SQLModel
-
 from utils.utils import utc_now
 
 

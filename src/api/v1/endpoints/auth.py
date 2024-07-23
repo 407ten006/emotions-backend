@@ -1,13 +1,12 @@
 from datetime import timedelta
 
-from fastapi import APIRouter, Depends, HTTPException
-
 from api.v1.deps import SessionDep, get_oauth_client
 from core import security
 from core.config import settings
 from core.exceptions import InvalidAuthorizationCode, InvalidToken
 from core.oauth_client import OAuthClient
 from cruds import users as users_crud
+from fastapi import APIRouter, Depends, HTTPException
 from models.auth import AuthToken, NaverLoginData
 from models.users import SocialProviderEnum, UserCreate
 

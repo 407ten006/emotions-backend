@@ -14,7 +14,8 @@ from models.diaries import (
     DiaryCreateRequest,
     DiaryMonth,
     DiaryPublic,
-    TodayDiaryPublic, DiaryUpdate,
+    DiaryUpdate,
+    TodayDiaryPublic,
 )
 from models.emotion_reacts import EmotionReactCreate, EmotionReactPublic
 from starlette import status
@@ -38,17 +39,11 @@ async def get_today_diary(session: SessionDep, current_user: CurrentUser):
         kst_search_date_yymmdd=kst_today_yymmdd,
     )
 
-    # print(today_diary)
-    emotions = []
     if today_diary:
-        emotions = [
-            emotion_react.emotion for emotion_react in today_diary.emotion_reacts
-        ]
         response = {
             "can_create": True,
             "diary": DiaryPublic.from_orm(today_diary).dict(),
         }
-        print(response)
         return create_response(True, "", response, HTTPStatus.OK)
 
     else:
@@ -72,7 +67,7 @@ async def get_diaries(
         search_date_yymm=search_date_yymm,
     )
     response_data = DiariesMonth(
-        diaries=[DiaryMonth.from_orm(diary).dict() for diary in diaries]
+        diaries=[DiaryMonth.from_orm(diary) for diary in diaries]
     )
     return create_response(True, "", response_data.dict(), HTTPStatus.OK)
 
@@ -113,9 +108,7 @@ async def create_diary(
 
     for emotion_enum in EmotionEnum:
         if emotion_enum.name in emotions and emotion_enum.name in percentage:
-            # emotion = await emotions_crud.get_emotion_by_name(
-            #     session=session, name=emotion_enum.name
-            # )
+
             new_emotion_react = EmotionReactCreate(
                 diary_id=created_diary.id,
                 emotion_id=emotion_enum.value,
@@ -161,7 +154,7 @@ async def update_diary(
     session: SessionDep,
     current_user: CurrentUser,
     diary_id: int = Path(),
-    diary_update: DiaryUpdate = Body(...)
+    diary_update: DiaryUpdate = Body(...),
 ) -> Any:
     """
     오늘의 메인 감정 선택
@@ -178,7 +171,7 @@ async def update_diary(
         session=session, diary=diary, emotion_id=diary_update.main_emotion_id
     )
 
-    return create_response(True,"",update_diary.dict(), HTTPStatus.OK)
+    return create_response(True, "", update_diary.dict(), HTTPStatus.OK)
 
 
 @router.get("/monthly-report", status_code=status.HTTP_200_OK)

@@ -4,10 +4,8 @@ from httpx import AsyncClient
 from models import User
 from models.auth import AuthToken
 from models.diaries import Diary, DiaryCreate
+from models.emotion_reacts import EmotionReact, EmotionReactCreate
 from sqlmodel import Session
-
-from models.emotion_reacts import EmotionReactCreate, EmotionReact
-from utils.utils import get_kst_today_yymmdd
 
 pytestmark = pytest.mark.asyncio
 
@@ -159,7 +157,7 @@ async def test_update_main_emotion_메인감정_업데이트(
     response = await async_client.patch(
         f"{settings.API_V1_STR}/diaries/{diary.id}",
         headers={"Authorization": f"Bearer {login_sample_user.access_token}"},
-        json={"main_emotion_id": 1}
+        json={"main_emotion_id": 1},
     )
 
     print(response.json())

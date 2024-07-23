@@ -1,9 +1,8 @@
 from datetime import datetime
 
+from core.enums import SocialProviderEnum
 from pydantic import EmailStr
 from sqlmodel import Field, SQLModel
-
-from core.enums import SocialProviderEnum
 from utils.utils import utc_now
 
 

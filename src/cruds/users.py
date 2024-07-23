@@ -1,6 +1,5 @@
-from sqlmodel import Session, select
-
 from models.users import User, UserCreate, UserUpdateMe
+from sqlmodel import Session, select
 
 
 async def create_user(*, session: Session, user_create: UserCreate) -> User:
