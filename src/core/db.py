@@ -14,12 +14,12 @@ else:
 
 # async def init_data(session: Session) -> None:
 #     if not session.exec(select(Emotion)).first():
-    #     await emotions_crud.create_emotion(session=session, emotion_create=EmotionCreate(name="열정이", description="열정이"))
-    #     await emotions_crud.create_emotion(session=session, emotion_create=EmotionCreate(name="기쁨이", description="기쁨이"))
-    #     await emotions_crud.create_emotion(session=session, emotion_create=EmotionCreate(name="감동이", description="감동이"))
-    #     await emotions_crud.create_emotion(session=session, emotion_create=EmotionCreate(name="불안이", description="불안이"))
-    #     await emotions_crud.create_emotion(session=session, emotion_create=EmotionCreate(name="버럭이", description="버럭이"))
-    #     await emotions_crud.create_emotion(session=session, emotion_create=EmotionCreate(name="슬픔이", description="슬픔이"))
+#     await emotions_crud.create_emotion(session=session, emotion_create=EmotionCreate(name="열정이", description="열정이"))
+#     await emotions_crud.create_emotion(session=session, emotion_create=EmotionCreate(name="기쁨이", description="기쁨이"))
+#     await emotions_crud.create_emotion(session=session, emotion_create=EmotionCreate(name="감동이", description="감동이"))
+#     await emotions_crud.create_emotion(session=session, emotion_create=EmotionCreate(name="불안이", description="불안이"))
+#     await emotions_crud.create_emotion(session=session, emotion_create=EmotionCreate(name="버럭이", description="버럭이"))
+#     await emotions_crud.create_emotion(session=session, emotion_create=EmotionCreate(name="슬픔이", description="슬픔이"))
 
 
 async def init_db(session: Session, engine: Engine) -> None:

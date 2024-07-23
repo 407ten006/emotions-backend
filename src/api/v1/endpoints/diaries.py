@@ -8,7 +8,7 @@ from core.enums import EmotionEnum
 from cruds import diaries as diaries_cruds
 from cruds import emotions as emotions_crud
 from cruds import emotions_reacts as emotions_reacts_cruds
-from fastapi import APIRouter, Body, HTTPException, Path, Query
+from fastapi import APIRouter, Body, Path, Query
 from models.diaries import (
     DiariesMonth,
     DiaryCreate,
@@ -17,7 +17,7 @@ from models.diaries import (
     DiaryPublic,
     TodayDiaryPublic,
 )
-from models.emotion_reacts import EmotionReactCreate
+from models.emotion_reacts import EmotionReactCreate, EmotionReactPublic
 from starlette import status
 from utils.utils import get_kst_today_yymmdd
 
@@ -53,30 +53,29 @@ async def get_today_diary(session: SessionDep, current_user: CurrentUser):
         return create_response(True, "", response, HTTPStatus.OK)
 
     else:
-        return create_response(False,"Error",None,HTTPStatus.NOT_FOUND)
+        return create_response(False, "Error", None, HTTPStatus.NOT_FOUND)
 
 
-
-@router.get("/", status_code=status.HTTP_200_OK,response_model=DiariesMonth)
-async def get_diaries(session: SessionDep, current_user: CurrentUser, search_date_yymm: str = Query()):
+@router.get("/", status_code=status.HTTP_200_OK, response_model=DiariesMonth)
+async def get_diaries(
+    session: SessionDep, current_user: CurrentUser, search_date_yymm: str = Query()
+):
     """
     월별 다이어리 조회
     """
 
-
     if not search_date_yymm:
-        return create_response(False,"Error",None,HTTPStatus.NOT_FOUND)
-
+        return create_response(False, "Error", None, HTTPStatus.NOT_FOUND)
 
     diaries = await diaries_cruds.get_diaries_by_month(
-        session = session,
+        session=session,
         user_id=current_user.id,
         search_date_yymm=search_date_yymm,
     )
     response_data = DiariesMonth(
         diaries=[DiaryMonth.from_orm(diary).dict() for diary in diaries]
     )
-    return create_response(True,"",response_data.dict(),HTTPStatus.OK)
+    return create_response(True, "", response_data.dict(), HTTPStatus.OK)
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=DiaryPublic)
@@ -102,7 +101,7 @@ async def create_diary(
     response_data = completion_executor.execute(user_input)
 
     if response_data is None:
-        return create_response(False,"Error",None,HTTPStatus.BAD_REQUEST)
+        return create_response(False, "Error", None, HTTPStatus.BAD_REQUEST)
 
     emotions = response_data.get("emotions")
     percentage = response_data.get("percentage")
@@ -115,7 +114,9 @@ async def create_diary(
 
     for emotion_enum in EmotionEnum:
         if emotion_enum.name in emotions and emotion_enum.name in percentage:
-            emotion = await emotions_crud.get_emotion_by_name(session=session, name=emotion_enum.name)
+            emotion = await emotions_crud.get_emotion_by_name(
+                session=session, name=emotion_enum.name
+            )
             new_emotion_react = EmotionReactCreate(
                 diary_id=created_diary.id,
                 emotion_id=emotion.id,
@@ -127,7 +128,7 @@ async def create_diary(
                 session=session, emotion_react_create=new_emotion_react
             )
 
-    return create_response(True,"",created_diary.dict(),HTTPStatus.CREATED)
+    return create_response(True, "", created_diary.dict(), HTTPStatus.CREATED)
 
 
 @router.get("/{diary_id}", status_code=status.HTTP_200_OK, response_model=DiaryPublic)
@@ -138,16 +139,30 @@ async def get_diary(session: SessionDep, current_user: CurrentUser, diary_id: in
 
     diary = await diaries_cruds.get_diary_by_id(session=session, diary_id=diary_id)
 
-    print(diary)
     if diary is None:
-        return create_response(False,"Error",None,HTTPStatus.NOT_FOUND)
+        return create_response(False, "Error", None, HTTPStatus.NOT_FOUND)
 
-    return create_response(True,"",diary.dict(),HTTPStatus.OK)
+    return create_response(
+        True,
+        "",
+        DiaryPublic(
+            id=diary.id,
+            content=diary.content,
+            chosen_emotion_id=diary.chosen_emotion_id,
+            emotion_reacts=[
+                EmotionReactPublic(**react.dict()) for react in diary.emotion_reacts
+            ],
+        ).model_dump(),
+        HTTPStatus.OK,
+    )
 
 
 @router.patch("/{diary_id}", status_code=status.HTTP_200_OK, response_model=DiaryPublic)
 async def update_diary(
-    session: SessionDep, current_user: CurrentUser, diary_id:int = Path(), main_emotion_id: int = Body(...)
+    session: SessionDep,
+    current_user: CurrentUser,
+    diary_id: int = Path(),
+    main_emotion_id: int = Body(...),
 ) -> Any:
     """
     오늘의 메인 감정 선택
@@ -157,14 +172,15 @@ async def update_diary(
 
     diary = await diaries_cruds.get_diary_by_id(session=session, diary_id=diary_id)
     # TODO: 리액션이 없는 감정 선택 시, 예외 처리
-    await diaries_cruds.update_main_emotion(session=session, diary=diary, emotion_id=main_emotion_id)
+    await diaries_cruds.update_main_emotion(
+        session=session, diary=diary, emotion_id=main_emotion_id
+    )
 
     return diary
 
 
 @router.get("/monthly-report", status_code=status.HTTP_200_OK)
 async def get_monthly_report(current_user: CurrentUser, month: int) -> Any:
-
     """
     월간 감정 분석
     """

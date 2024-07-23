@@ -41,15 +41,16 @@ class DiaryPublic(SQLModel):
     chosen_emotion_id: int | None
     emotion_reacts: list[EmotionReactPublic]
 
+
 class DiaryMonth(SQLModel):
     id: int
     chosen_emotion_id: int | None = None
     created_datetime: datetime = Field(default_factory=utc_now)
 
 
-
 class DiariesMonth(SQLModel):
     diaries: list[DiaryMonth]
+
 
 class DiariesPublic(SQLModel):
     data: list[DiaryPublic]

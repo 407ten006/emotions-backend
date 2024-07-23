@@ -29,10 +29,7 @@ async def test_get_emotions_감정이들_전체_조회(
     db_session.refresh(diary)
 
     emotion_react_create = EmotionReactCreate(
-        diary_id=diary.id,
-        emotion_id=1,
-        content="정말 기뻐요!",
-        percent=80
+        diary_id=diary.id, emotion_id=1, content="정말 기뻐요!", percent=80
     )
 
     emotion_react = EmotionReact.from_orm(emotion_react_create)
@@ -42,11 +39,7 @@ async def test_get_emotions_감정이들_전체_조회(
 
     response = await async_client.get(
         f"{settings.API_V1_STR}/emotion_reacts",
-        headers={"Authorization": f"Bearer {login_sample_user.access_token}"}
+        headers={"Authorization": f"Bearer {login_sample_user.access_token}"},
     )
 
     print(response.json())
-
-
-
-

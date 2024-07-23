@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
-from models import EmotionReact
 from models.diaries import Diary, DiaryCreate
 from sqlmodel import Session, select
 
@@ -29,12 +28,9 @@ async def get_diaries_by_month(
 ) -> list[Diary]:
     year = int(search_date_yymm[:4])
     month = int(search_date_yymm[4:6])
-    statement = (
-        select(Diary)
-        .where(
-            (Diary.created_datetime >= datetime(year, month, 1)) &
-            (Diary.created_datetime < datetime(year, month + 1, 1))
-        )
+    statement = select(Diary).where(
+        (Diary.created_datetime >= datetime(year, month, 1))
+        & (Diary.created_datetime < datetime(year, month + 1, 1))
     )
     return session.exec(statement).all()
 
@@ -61,9 +57,5 @@ async def update_main_emotion(
 
 
 async def get_diary_by_id(*, session: Session, diary_id: int) -> Diary | None:
-    statement = (
-        select(Diary)
-        .join(EmotionReact, isouter=True)
-        .where(Diary.id == diary_id)
-    )
+    statement = select(Diary).where(Diary.id == diary_id)
     return session.exec(statement).first()
