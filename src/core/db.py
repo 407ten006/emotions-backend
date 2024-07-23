@@ -1,5 +1,4 @@
 from core.config import settings
-from cruds import emotions as emotions_crud
 from models import Diary, EmotionReact, MonthlyReport, User
 from sqlalchemy import Engine, create_engine
 from sqlmodel import Session, select

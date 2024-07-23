@@ -27,7 +27,7 @@ class DiaryCreateRequest(SQLModel):
 
 
 class DiaryUpdate(SQLModel):
-    chosen_emotion_id: int
+    main_emotion_id: int
 
 
 class Diary(DiaryBase, table=True):

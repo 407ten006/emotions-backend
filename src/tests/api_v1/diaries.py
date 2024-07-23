@@ -137,3 +137,29 @@ async def test_get_diary_특정_다이어리_조회(
         headers={"Authorization": f"Bearer {login_sample_user.access_token}"},
     )
     print(response.json())
+
+
+async def test_update_main_emotion_메인감정_업데이트(
+    async_client: AsyncClient,
+    sample_user: User,
+    login_sample_user: AuthToken,
+    db_session: Session,
+):
+    diary = Diary.from_orm(
+        DiaryCreate(
+            user_id=sample_user.id,
+            content="오늘의 일기",
+        )
+    )
+
+    db_session.add(diary)
+    db_session.commit()
+    db_session.refresh(diary)
+
+    response = await async_client.patch(
+        f"{settings.API_V1_STR}/diaries/{diary.id}",
+        headers={"Authorization": f"Bearer {login_sample_user.access_token}"},
+        json={"main_emotion_id": 1}
+    )
+
+    print(response.json())

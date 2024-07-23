@@ -6,7 +6,6 @@ from api.v1.global_response import create_response
 from core.clova_model_api import CompletionExecutor
 from core.enums import EmotionEnum
 from cruds import diaries as diaries_cruds
-from cruds import emotions as emotions_crud
 from cruds import emotions_reacts as emotions_reacts_cruds
 from fastapi import APIRouter, Body, Path, Query
 from models.diaries import (
@@ -15,7 +14,7 @@ from models.diaries import (
     DiaryCreateRequest,
     DiaryMonth,
     DiaryPublic,
-    TodayDiaryPublic,
+    TodayDiaryPublic, DiaryUpdate,
 )
 from models.emotion_reacts import EmotionReactCreate, EmotionReactPublic
 from starlette import status
@@ -114,12 +113,12 @@ async def create_diary(
 
     for emotion_enum in EmotionEnum:
         if emotion_enum.name in emotions and emotion_enum.name in percentage:
-            emotion = await emotions_crud.get_emotion_by_name(
-                session=session, name=emotion_enum.name
-            )
+            # emotion = await emotions_crud.get_emotion_by_name(
+            #     session=session, name=emotion_enum.name
+            # )
             new_emotion_react = EmotionReactCreate(
                 diary_id=created_diary.id,
-                emotion_id=emotion.id,
+                emotion_id=emotion_enum.value,
                 content=emotions[emotion_enum.name],
                 percent=percentage[emotion_enum.name],
             )
@@ -162,21 +161,24 @@ async def update_diary(
     session: SessionDep,
     current_user: CurrentUser,
     diary_id: int = Path(),
-    main_emotion_id: int = Body(...),
+    diary_update: DiaryUpdate = Body(...)
 ) -> Any:
     """
     오늘의 메인 감정 선택
     1. id 값으로 다이어리 조히
     2. Diary의 choosen값을 고른 값으로 설정
     """
-
     diary = await diaries_cruds.get_diary_by_id(session=session, diary_id=diary_id)
     # TODO: 리액션이 없는 감정 선택 시, 예외 처리
-    await diaries_cruds.update_main_emotion(
-        session=session, diary=diary, emotion_id=main_emotion_id
+
+    if not diary:
+        return create_response(False, "Diary not found", None, HTTPStatus.NOT_FOUND)
+
+    update_diary = await diaries_cruds.update_main_emotion(
+        session=session, diary=diary, emotion_id=diary_update.main_emotion_id
     )
 
-    return diary
+    return create_response(True,"",update_diary.dict(), HTTPStatus.OK)
 
 
 @router.get("/monthly-report", status_code=status.HTTP_200_OK)

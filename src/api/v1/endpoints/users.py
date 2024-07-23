@@ -27,11 +27,11 @@ async def update_user_me(
     """
     내 정보 업데이트
     """
-    await users_crud.update_user(
+    updated_user = await users_crud.update_user(
         session=session, user=current_user, user_update=user_update
     )
 
-    return create_response(True,"",jsonable_encoder(current_user))
+    return create_response(True,"",jsonable_encoder(updated_user))
 
 
 
