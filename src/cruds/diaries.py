@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
 from models.diaries import Diary, DiaryCreate
-from sqlmodel import Session, select
+from sqlmodel import Session, select,func
 
 
 async def get_today_diary(
@@ -59,3 +59,29 @@ async def update_main_emotion(
 async def get_diary_by_id(*, session: Session, diary_id: int) -> Diary | None:
     statement = select(Diary).where(Diary.id == diary_id)
     return session.exec(statement).first()
+
+
+async def get_most_common_emotion_for_month(
+    *, session: Session, user_id: int, search_date_yymm: str
+) -> int | None:
+    year = int(search_date_yymm[:4])
+    month = int(search_date_yymm[4:6])
+    start_date = datetime(year, month, 1)
+    end_date = (start_date + timedelta(days=31)).replace(day=1)
+
+    statement = (
+        select(Diary.chosen_emotion_id, func.count(Diary.chosen_emotion_id).label('count'))
+        .where(
+            Diary.user_id == user_id,
+            Diary.created_datetime >= start_date,
+            Diary.created_datetime < end_date
+        )
+        .group_by(Diary.chosen_emotion_id)
+        .order_by(func.count(Diary.chosen_emotion_id).desc())
+    )
+
+    result = session.exec(statement).first()
+    if result:
+        return result.chosen_emotion_id
+    return None
+

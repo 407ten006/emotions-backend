@@ -173,11 +173,3 @@ async def update_diary(
 
     return create_response(True, "", update_diary.dict(), HTTPStatus.OK)
 
-
-@router.get("/monthly-report", status_code=status.HTTP_200_OK)
-async def get_monthly_report(current_user: CurrentUser, month: int) -> Any:
-    """
-    월간 감정 분석
-    """
-
-    return {}

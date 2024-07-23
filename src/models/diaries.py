@@ -16,10 +16,13 @@ class DiaryBase(SQLModel):
     created_datetime: datetime
 
 
+
+
 class DiaryCreate(SQLModel):
     user_id: int
     content: str = Field(..., max_length=300)
     created_datetime: datetime = Field(default_factory=utc_now)
+    chosen_emotion_id: int | None = Field(default=None)
 
 
 class DiaryCreateRequest(SQLModel):
