@@ -5,6 +5,8 @@ from models import User
 from models.auth import AuthToken
 from models.diaries import Diary, DiaryCreate
 from sqlmodel import Session
+
+from models.emotion_reacts import EmotionReactCreate, EmotionReact
 from utils.utils import get_kst_today_yymmdd
 
 pytestmark = pytest.mark.asyncio
@@ -19,9 +21,7 @@ async def test__get_today_diary__오늘_기록이_없는_경우(
     )
 
     response_json = response.json()
-    print(response_json["data"])
-    print(response_json["message"])
-    print(response_json["success"])
+    print(response_json)
     assert response.status_code == 404
 
 
@@ -47,9 +47,9 @@ async def test__get_today_diary__오늘_기록이_있는_경우(
         f"{settings.API_V1_STR}/diaries/today",
         headers={"Authorization": f"Bearer {login_sample_user.access_token}"},
     )
-    print(response)
+    print(response.json())
 
-async def test_get_month_diaries(
+async def test_get_month_diaries_특정달의_다이어리들_조회(
         async_client: AsyncClient,
         sample_user: User,
         login_sample_user: AuthToken,
@@ -79,7 +79,7 @@ async def test_get_month_diaries(
 
 
 
-async def test_create_diary_api(
+async def test_create_diary_api_다이어리_생성(
     mocker,
     async_client: AsyncClient,
     sample_user: User,
@@ -99,4 +99,46 @@ async def test_create_diary_api(
         json={"content": user_input},
     )
 
-    print(response)
+    print(response.json())
+
+
+async def test_get_diary_특정_다이어리_조회(
+        async_client: AsyncClient,
+        sample_user: User,
+        login_sample_user: AuthToken,
+        db_session: Session,
+):
+
+    diary = Diary.from_orm(
+        DiaryCreate(
+            user_id=sample_user.id,
+            content="오늘의 일기",
+        )
+    )
+
+    db_session.add(diary)
+    db_session.commit()
+    db_session.refresh(diary)
+
+    emotion_react_create = EmotionReactCreate(
+        diary_id=diary.id,
+        emotion_id=1,
+        content="정말 기뻐요!",
+        percent=80
+    )
+
+    emotion_react = EmotionReact.from_orm(emotion_react_create)
+    db_session.add(emotion_react)
+    db_session.commit()
+    db_session.refresh(emotion_react)
+
+    response = await async_client.get(
+        f"{settings.API_V1_STR}/diaries/{diary.id}",
+        headers={"Authorization": f"Bearer {login_sample_user.access_token}"},
+    )
+    print(response.json())
+
+
+
+
+

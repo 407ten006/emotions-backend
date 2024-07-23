@@ -48,7 +48,6 @@ async def get_today_diary(session: SessionDep, current_user: CurrentUser):
         response = {
             "can_create": True,
             "diary": DiaryPublic.from_orm(today_diary).dict(),
-            "emotions": emotions,
         }
         print(response)
         return create_response(True, "", response, HTTPStatus.OK)
@@ -66,7 +65,7 @@ async def get_diaries(session: SessionDep, current_user: CurrentUser, search_dat
 
 
     if not search_date_yymm:
-        raise HTTPException(status_code=400, detail="Invalid search_date_yymm")
+        return create_response(False,"Error",None,HTTPStatus.NOT_FOUND)
 
 
     diaries = await diaries_cruds.get_diaries_by_month(
@@ -74,12 +73,10 @@ async def get_diaries(session: SessionDep, current_user: CurrentUser, search_dat
         user_id=current_user.id,
         search_date_yymm=search_date_yymm,
     )
-
     response_data = DiariesMonth(
-        data = [DiaryMonth.from_orm(diary) for diary in diaries]
+        diaries=[DiaryMonth.from_orm(diary).dict() for diary in diaries]
     )
-    print(response_data)
-    return response_data
+    return create_response(True,"",response_data.dict(),HTTPStatus.OK)
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=DiaryPublic)
@@ -105,10 +102,7 @@ async def create_diary(
     response_data = completion_executor.execute(user_input)
 
     if response_data is None:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal Server Error",
-        )
+        return create_response(False,"Error",None,HTTPStatus.BAD_REQUEST)
 
     emotions = response_data.get("emotions")
     percentage = response_data.get("percentage")
@@ -133,7 +127,7 @@ async def create_diary(
                 session=session, emotion_react_create=new_emotion_react
             )
 
-    return created_diary
+    return create_response(True,"",created_diary.dict(),HTTPStatus.CREATED)
 
 
 @router.get("/{diary_id}", status_code=status.HTTP_200_OK, response_model=DiaryPublic)
@@ -144,10 +138,11 @@ async def get_diary(session: SessionDep, current_user: CurrentUser, diary_id: in
 
     diary = await diaries_cruds.get_diary_by_id(session=session, diary_id=diary_id)
 
+    print(diary)
     if diary is None:
-        raise HTTPException(status_code=404, detail="Not Found")
+        return create_response(False,"Error",None,HTTPStatus.NOT_FOUND)
 
-    return diary
+    return create_response(True,"",diary.dict(),HTTPStatus.OK)
 
 
 @router.patch("/{diary_id}", status_code=status.HTTP_200_OK, response_model=DiaryPublic)
