@@ -17,6 +17,7 @@ RUN bash -c "if [ $INSTALL_DEV == 'true' ] ; then poetry install --no-root ; els
 
 # Set the correct PYTHONPATH
 ENV PYTHONPATH=/app
+ENV PYTHONPATH=/app:/app/src
 
 # Copy the entire project
 COPY . /app/
