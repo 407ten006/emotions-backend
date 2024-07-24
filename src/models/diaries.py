@@ -16,8 +16,6 @@ class DiaryBase(SQLModel):
     created_datetime: datetime
 
 
-
-
 class DiaryCreate(SQLModel):
     user_id: int
     content: str = Field(..., max_length=300)

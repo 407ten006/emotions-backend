@@ -1,5 +1,4 @@
 from http import HTTPStatus
-from typing import Any
 
 from api.v1.deps import CurrentUser, SessionDep
 from api.v1.global_response import create_response
@@ -155,7 +154,7 @@ async def update_diary(
     current_user: CurrentUser,
     diary_id: int = Path(),
     diary_update: DiaryUpdate = Body(...),
-) -> Any:
+):
     """
     오늘의 메인 감정 선택
     1. id 값으로 다이어리 조히
@@ -172,4 +171,3 @@ async def update_diary(
     )
 
     return create_response(True, "", update_diary.dict(), HTTPStatus.OK)
-

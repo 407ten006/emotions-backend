@@ -17,8 +17,10 @@ class MonthlyReportCreate(SQLModel):
     content: str = Field(..., max_length=1000)
     created_datetime: datetime = Field(default_factory=utc_now)
 
+
 class MonthlyReportCreateRequest(SQLModel):
     created_date_yymm: str
+
 
 class MonthlyReport(MonthlyReportBase, table=True):
     id: int | None = Field(default=None, primary_key=True)

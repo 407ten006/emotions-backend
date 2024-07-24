@@ -17,7 +17,7 @@ from sqlmodel import Session
 
 
 def verify_jwt_token(
-    access_token=Security(HTTPBearer(auto_error=False)),
+    access_token=Security(HTTPBearer(auto_error=True)),
 ) -> str:
     return access_token.credentials
 
