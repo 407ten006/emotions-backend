@@ -161,7 +161,11 @@ async def update_diary(
     2. Diary의 choosen값을 고른 값으로 설정
     """
     diary = await diaries_cruds.get_diary_by_id(session=session, diary_id=diary_id)
-    # TODO: 리액션이 없는 감정 선택 시, 예외 처리
+
+    available_reactions = [emotion_react.id for emotion_react in diary.emotion_reacts]
+
+    if diary_update.main_emotion_id not in available_reactions:
+        return create_response(False, "Invalid emotion", None, HTTPStatus.BAD_REQUEST)
 
     if not diary:
         return create_response(False, "Diary not found", None, HTTPStatus.NOT_FOUND)
