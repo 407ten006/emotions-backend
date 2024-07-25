@@ -82,8 +82,9 @@ async def create_diary(
     2. API가 올바를 경우 값을 Emotions과 Diary를 DB에 넣기
     3. 만들어진 Map 2개를 Return
     """
-
+    # print("REQ : ", diary_create_req)
     user_input = diary_create_req.content
+    # print("USER_INPUT: ", user_input)
     completion_executor = CompletionExecutor(
         host="https://clovastudio.stream.ntruss.com",
         api_key="NTA0MjU2MWZlZTcxNDJiY21itK49zPMot4GU4kpHHJ7YoRLzH63vIBpYq11WnRK6",
@@ -91,36 +92,45 @@ async def create_diary(
         request_id="b109906c-e945-4c19-9d30-8bd62bd8f0a7",
     )
 
-    response_data = completion_executor.execute(user_input)
+    try :
+        response_data = completion_executor.execute(user_input)
+        # print("response data: ", response_data)
+        if response_data is None:
+            raise ValueError("Response data is None")
 
-    if response_data is None:
-        return create_response(False, "Error", None, HTTPStatus.BAD_REQUEST)
+        emotions = response_data.get("emotions")
+        percentage = response_data.get("percentage")
+        if (emotions is None) or (percentage is None):
+            raise ValueError("Emotions is None or Percentage is None")
+        new_diary = DiaryCreate(user_id=current_user.id, content=user_input)
+        # print("new_diary: ", new_diary)
 
-    emotions = response_data.get("emotions")
-    percentage = response_data.get("percentage")
+        created_diary = await diaries_cruds.create_diary(
+            session=session, diary_create=new_diary
+        )
 
-    new_diary = DiaryCreate(user_id=current_user.id, content=user_input)
+        # print("created_diary: ", created_diary)
 
-    created_diary = await diaries_cruds.create_diary(
-        session=session, diary_create=new_diary
-    )
 
-    for emotion_enum in EmotionEnum:
-        if emotion_enum.name in emotions and emotion_enum.name in percentage:
+        for emotion_enum in EmotionEnum:
+            if emotion_enum.name in emotions and emotion_enum.name in percentage:
 
-            new_emotion_react = EmotionReactCreate(
-                diary_id=created_diary.id,
-                emotion_id=emotion_enum.value,
-                content=emotions[emotion_enum.name],
-                percent=percentage[emotion_enum.name],
-            )
+                new_emotion_react = EmotionReactCreate(
+                    diary_id=created_diary.id,
+                    emotion_id=emotion_enum.value,
+                    content=emotions[emotion_enum.name],
+                    percent=percentage[emotion_enum.name],
+                )
 
-            await emotions_reacts_cruds.create_emotion_react(
-                session=session, emotion_react_create=new_emotion_react
-            )
+                await emotions_reacts_cruds.create_emotion_react(
+                    session=session, emotion_react_create=new_emotion_react
+                )
 
-    return create_response(True, "", created_diary.dict(), HTTPStatus.CREATED)
-
+        return create_response(True, "", response_data, HTTPStatus.CREATED)
+    except (ValueError,KeyError) as e :
+        return create_response(False, "Error", e, HTTPStatus.BAD_REQUEST)
+    except Exception as e:
+        return create_response(False, "Error", e, HTTPStatus.INTERNAL_SERVER_ERROR)
 
 @router.get("/{diary_id}", status_code=status.HTTP_200_OK, response_model=DiaryPublic)
 async def get_diary(session: SessionDep, current_user: CurrentUser, diary_id: int):
