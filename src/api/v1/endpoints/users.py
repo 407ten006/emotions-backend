@@ -39,7 +39,7 @@ async def update_user_me(
     status_code=status.HTTP_200_OK,
     response_model=CheckNicknamePublic,
 )
-async def check_nickname(nickname: str = Body(...)):
+async def check_nickname(nickname: str = Body(..., embed=True)):
     """
     유효한 닉네임 확인
     """
@@ -51,6 +51,14 @@ async def check_nickname(nickname: str = Body(...)):
     )
 
     if is_valid := completion_executor.execute(nickname):
-        return create_response(True, "사용 가능한 닉네임이에요.", CheckNicknamePublic(is_valid=is_valid).dict())
+        return create_response(
+            True,
+            "사용 가능한 닉네임이에요.",
+            CheckNicknamePublic(is_valid=is_valid).dict(),
+        )
 
-    return create_response(False, "사용이 불가능한 닉네임이에요.", CheckNicknamePublic(is_valid=False).dict())
+    return create_response(
+        False,
+        "사용이 불가능한 닉네임이에요.",
+        CheckNicknamePublic(is_valid=False).dict(),
+    )

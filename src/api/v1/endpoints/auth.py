@@ -30,12 +30,12 @@ async def naver_login(
         user_data = {
             "email": user_info["email"],
             "id": user_info["id"],
-            "mobile": user_info["mobile"],
-            "name": user_info["name"],
-            "profile_image": user_info["profile_image"],
-            "age": user_info["age"],
-            "birthday": user_info["birthday"],
-            "gender": user_info["gender"],
+            "mobile": user_info.get("mobile", ""),
+            "name": user_info.get("name"),
+            "profile_image": user_info.get("profile_image"),
+            "age": user_info.get("age"),
+            "birthday": user_info.get("birthday"),
+            "gender": user_info.get("gender"),
         }
 
     except InvalidToken:
