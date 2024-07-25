@@ -43,6 +43,7 @@ async def naver_login(
 
     user = await users_crud.get_user_by_email(session=session, email=user_data["email"])
 
+    is_new_user = False
     if not user:
         user = await users_crud.create_user(
             session=session,
@@ -52,6 +53,7 @@ async def naver_login(
                 social_provider=SocialProviderEnum.naver,
             ),
         )
+        is_new_user = True
 
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     jwt_token = security.create_access_token(
@@ -61,4 +63,5 @@ async def naver_login(
     return AuthToken(
         access_token=jwt_token,
         token_type="bearer",
+        is_new_user=is_new_user,
     )

@@ -1,5 +1,6 @@
 from api.v1.deps import CurrentUser, SessionDep
 from api.v1.global_response import create_response
+from core.bad_word_model_api import BadExecutor
 from cruds import users as users_crud
 from fastapi import APIRouter, Body
 from fastapi.encoders import jsonable_encoder
@@ -38,9 +39,18 @@ async def update_user_me(
     status_code=status.HTTP_200_OK,
     response_model=CheckNicknamePublic,
 )
-async def check_nickname(session: SessionDep, nickname: str):
+async def check_nickname(nickname: str = Body(...)):
     """
     유효한 닉네임 확인
     """
-    # TODO: 비속어 필터 적용
-    return CheckNicknamePublic(is_valid=True)
+    completion_executor = BadExecutor(
+        host="https://clovastudio.stream.ntruss.com",
+        api_key="NTA0MjU2MWZlZTcxNDJiY21itK49zPMot4GU4kpHHJ7YoRLzH63vIBpYq11WnRK6",
+        api_key_primary_val="K6lejdNbv4l8otvjbazmKQHVRCfoNUKlPCwz1r2q",
+        request_id="ffdfa5f8-aa09-47f5-a782-65d49637a81a",
+    )
+
+    if is_valid := completion_executor.execute(nickname):
+        return create_response(True, "사용 가능한 닉네임이에요.", CheckNicknamePublic(is_valid=is_valid).dict())
+
+    return create_response(False, "사용이 불가능한 닉네임이에요.", CheckNicknamePublic(is_valid=False).dict())

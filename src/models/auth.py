@@ -9,6 +9,7 @@ class NaverLoginData(SQLModel):
 class AuthToken(SQLModel):
     access_token: str
     token_type: str = "bearer"
+    is_new_user: bool | None
 
 
 class AuthTokenPayload(SQLModel):
