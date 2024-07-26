@@ -40,13 +40,17 @@ async def get_today_diary(session: SessionDep, current_user: CurrentUser):
 
     if today_diary:
         response = {
-            "can_create": True,
+            "can_create": False,
             "diary": DiaryPublic.from_orm(today_diary).dict(),
         }
         return create_response(True, "", response, HTTPStatus.OK)
 
     else:
-        return create_response(False, "Error", None, HTTPStatus.NOT_FOUND)
+        response = {
+            "can_create": True,
+            "diary": None,
+        }
+        return create_response(True, "", response, HTTPStatus.OK)
 
 
 @router.get("/", status_code=status.HTTP_200_OK, response_model=DiariesMonth)
@@ -65,8 +69,19 @@ async def get_diaries(
         user_id=current_user.id,
         search_date_yymm=search_date_yymm,
     )
+
+    month_diaries = []
+    for diary in diaries:
+        if diary.chosen_emotion_id:
+            month_diaries.append(DiaryMonth(
+                id=diary.id,
+                chosen_emotion_id=diary.chosen_emotion_id,
+                chosen_emotion=EmotionEnum(diary.chosen_emotion_id).name,
+                created_datetime=diary.created_datetime
+            ))
+
     response_data = DiariesMonth(
-        diaries=[DiaryMonth.from_orm(diary) for diary in diaries]
+        diaries=month_diaries
     )
     return create_response(True, "", response_data.dict(), HTTPStatus.OK)
 

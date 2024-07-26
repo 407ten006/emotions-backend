@@ -46,7 +46,9 @@ class DiaryPublic(SQLModel):
 class DiaryMonth(SQLModel):
     id: int
     chosen_emotion_id: int | None = None
+    chosen_emotion: str | None = None
     created_datetime: datetime = Field(default_factory=utc_now)
+
 
 
 class DiariesMonth(SQLModel):
