@@ -72,13 +72,12 @@ async def get_diaries(
 
     month_diaries = []
     for diary in diaries:
-        if diary.chosen_emotion_id:
-            month_diaries.append(DiaryMonth(
-                id=diary.id,
-                chosen_emotion_id=diary.chosen_emotion_id,
-                chosen_emotion=EmotionEnum(diary.chosen_emotion_id).name,
-                created_datetime=diary.created_datetime
-            ))
+        month_diaries.append(DiaryMonth(
+            id=diary.id,
+            chosen_emotion_id=diary.chosen_emotion_id,
+            chosen_emotion=EmotionEnum(diary.chosen_emotion_id).name if diary.chosen_emotion_id else None,
+            created_datetime=diary.created_datetime
+        ))
 
     response_data = DiariesMonth(
         diaries=month_diaries
