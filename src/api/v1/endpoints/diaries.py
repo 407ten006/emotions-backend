@@ -124,6 +124,7 @@ async def create_diary(
         )
 
         # print("created_diary: ", created_diary)
+        response_data["diary_id"] = created_diary.id
 
         for emotion_enum in EmotionEnum:
             if emotion_enum.name in emotions and emotion_enum.name in percentage:
@@ -186,7 +187,7 @@ async def update_diary(
     """
     diary = await diaries_cruds.get_diary_by_id(session=session, diary_id=diary_id)
 
-    available_reactions = [emotion_react.id for emotion_react in diary.emotion_reacts]
+    available_reactions = [emotion_react.emotion_id for emotion_react in diary.emotion_reacts]
 
     if diary_update.main_emotion_id not in available_reactions:
         return create_response(False, "Invalid emotion", None, HTTPStatus.BAD_REQUEST)
