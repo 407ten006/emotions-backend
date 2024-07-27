@@ -1,3 +1,5 @@
+import os
+
 from api.v1.deps import CurrentUser, SessionDep
 from api.v1.global_response import create_response
 from core.bad_word_model_api import BadExecutor
@@ -70,8 +72,10 @@ async def check_nickname(nickname: str = Body(..., embed=True)):
     response_model=CheckNicknamePublic,
 )
 async def check_nickname_2(nickname: str = Body(..., embed=True)):
-    file_path = "../../../core/fword_list.txt"
-    with open(file_path, "r") as f:
+    file_path = os.path.join(os.path.dirname(__file__), "..", "..", "..", "core", "fword_list.txt")
+    file_path = os.path.abspath(file_path)
+
+    with open(file_path) as f:
         bad_words = f.read().split("\n")
 
     for bad_word in bad_words:
