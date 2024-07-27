@@ -81,6 +81,10 @@ class Settings(BaseSettings):
     NAVER_CLIENT_ID: str
     NAVER_CLIENT_SECRET_ID: str
 
+    # Kakao Social
+    KAKAO_CLIENT_ID: str
+    KAKAO_CLIENT_SECRET_ID: str
+
     def _check_default_secret(self, var_name: str, value: str | None) -> None:
         if value == "changethis":
             message = (

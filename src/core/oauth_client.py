@@ -98,3 +98,11 @@ naver_client = OAuthClient(
     resource_uri="https://openapi.naver.com/v1/nid/me",
     verify_uri="https://openapi.naver.com/v1/nid/verify",
 )
+
+kakao_client = OAuthClient(
+    client_id=settings.KAKAO_CLIENT_ID,
+    client_secret_id=settings.KAKAO_CLIENT_SECRET_ID,
+    authentication_uri="https://kauth.kakao.com/oauth",
+    resource_uri="https://kapi.kakao.com/v2/user/me",
+    verify_uri="https://kapi.kakao.com/v1/user/access_token_info",
+)

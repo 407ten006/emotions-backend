@@ -5,7 +5,7 @@ import jwt
 from core import security
 from core.config import settings
 from core.db import engine
-from core.oauth_client import OAuthClient, naver_client
+from core.oauth_client import OAuthClient, kakao_client, naver_client
 from cruds import users as users_crud
 from fastapi import Depends, HTTPException, Query, Security, status
 from fastapi.security.http import HTTPBearer
@@ -57,5 +57,11 @@ async def get_current_user(session: SessionDep, token: TokenDep) -> User:
 CurrentUser = Annotated[User, Depends(get_current_user)]
 
 
-def get_oauth_client(provider: str = Query(..., regex="naver")) -> OAuthClient:
-    return naver_client
+def get_oauth_client(provider: str = Query(..., regex="naver|kakao")) -> OAuthClient:
+    if provider == "naver":
+        return naver_client
+    elif provider == "kakao":
+        return kakao_client
+    else:
+        raise HTTPException(status_code=400, detail="Invalid provider")
+
