@@ -106,7 +106,7 @@ async def create_diary(
         request_id="b109906c-e945-4c19-9d30-8bd62bd8f0a7",
     )
 
-    try:
+    try :
         response_data = completion_executor.execute(user_input)
         # print("response data: ", response_data)
         if response_data is None:
@@ -126,6 +126,7 @@ async def create_diary(
         # print("created_diary: ", created_diary)
         response_data["diary_id"] = created_diary.id
 
+
         for emotion_enum in EmotionEnum:
             if emotion_enum.name in emotions and emotion_enum.name in percentage:
 
@@ -141,11 +142,10 @@ async def create_diary(
                 )
 
         return create_response(True, "", response_data, HTTPStatus.CREATED)
-    except (ValueError, KeyError) as e:
+    except (ValueError,KeyError) as e :
         return create_response(False, "Error", e, HTTPStatus.BAD_REQUEST)
     except Exception as e:
         return create_response(False, "Error", e, HTTPStatus.INTERNAL_SERVER_ERROR)
-
 
 @router.get("/{diary_id}", status_code=status.HTTP_200_OK, response_model=DiaryPublic)
 async def get_diary(session: SessionDep, current_user: CurrentUser, diary_id: int):

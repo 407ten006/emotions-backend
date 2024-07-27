@@ -58,7 +58,7 @@ class CompletionExecutor:
                 decoded_line = line.decode("utf-8")
                 if line:
                     if flag:
-                        # print("decoded Line: ", decoded_line)
+                        print("decoded Line: ", decoded_line)
                         data = json.loads(decoded_line[5:])
                         parsed_data = data["message"]["content"]
                         # print("after decode : ", parsed_data)

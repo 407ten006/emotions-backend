@@ -40,3 +40,15 @@ async def test_update_me_내정보_업데이트(
 
     response_data = response.json()
     print(response_data)
+
+async def test_check_nickname(
+        async_client: AsyncClient, sample_user: User, login_sample_user: AuthToken
+):
+
+    response = await async_client.post(
+        f"{settings.API_V1_STR}/users/check-nickname2",  # URL이 /me로 설정된 경우
+        headers={"Authorization": f"Bearer {login_sample_user.access_token}"},
+        json={"nickname": "newnickname"},
+    )
+
+    print(response)
