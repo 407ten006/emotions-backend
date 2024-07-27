@@ -8,6 +8,8 @@ if settings.ENVIRONMENT == "test":
         "sqlite:///test.db", connect_args={"check_same_thread": False}
     )
 else:
+    dbschema= 'db,pulic'
+
     engine = create_engine(
         str(settings.SQLALCHEMY_DATABASE_URI),
         poolclass=QueuePool,
@@ -15,6 +17,7 @@ else:
         pool_size=10,
         max_overflow=20,
         pool_recycle=3600,
+        connect_args={"options": f"-c search_path={dbschema}"},
     )
 
 
