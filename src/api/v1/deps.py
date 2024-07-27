@@ -64,4 +64,3 @@ def get_oauth_client(provider: str = Query(..., regex="naver|kakao")) -> OAuthCl
         return kakao_client
     else:
         raise HTTPException(status_code=400, detail="Invalid provider")
-

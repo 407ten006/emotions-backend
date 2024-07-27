@@ -81,16 +81,20 @@ async def get_diaries(
             if best_emotion is not None:
                 diary.chosen_emotion_id = best_emotion.emotion_id
 
-        month_diaries.append(DiaryMonth(
-            id=diary.id,
-            chosen_emotion_id=diary.chosen_emotion_id,
-            chosen_emotion=EmotionEnum(diary.chosen_emotion_id).name if diary.chosen_emotion_id else None,
-            created_datetime=diary.created_datetime
-        ))
+        month_diaries.append(
+            DiaryMonth(
+                id=diary.id,
+                chosen_emotion_id=diary.chosen_emotion_id,
+                chosen_emotion=(
+                    EmotionEnum(diary.chosen_emotion_id).name
+                    if diary.chosen_emotion_id
+                    else None
+                ),
+                created_datetime=diary.created_datetime,
+            )
+        )
 
-    response_data = DiariesMonth(
-        diaries=month_diaries
-    )
+    response_data = DiariesMonth(diaries=month_diaries)
     return create_response(True, "", response_data.dict(), HTTPStatus.OK)
 
 
@@ -115,7 +119,7 @@ async def create_diary(
         request_id="b109906c-e945-4c19-9d30-8bd62bd8f0a7",
     )
 
-    try :
+    try:
         response_data = completion_executor.execute(user_input)
         # print("response data: ", response_data)
         if response_data is None:
@@ -135,7 +139,6 @@ async def create_diary(
         # print("created_diary: ", created_diary)
         response_data["diary_id"] = created_diary.id
 
-
         for emotion_enum in EmotionEnum:
             if emotion_enum.name in emotions and emotion_enum.name in percentage:
 
@@ -151,10 +154,11 @@ async def create_diary(
                 )
 
         return create_response(True, "", response_data, HTTPStatus.CREATED)
-    except (ValueError,KeyError) as e :
+    except (ValueError, KeyError) as e:
         return create_response(False, "Error", e, HTTPStatus.BAD_REQUEST)
     except Exception as e:
         return create_response(False, "Error", e, HTTPStatus.INTERNAL_SERVER_ERROR)
+
 
 @router.get("/{diary_id}", status_code=status.HTTP_200_OK, response_model=DiaryPublic)
 async def get_diary(session: SessionDep, current_user: CurrentUser, diary_id: int):
@@ -205,7 +209,9 @@ async def update_diary(
     """
     diary = await diaries_cruds.get_diary_by_id(session=session, diary_id=diary_id)
 
-    available_reactions = [emotion_react.emotion_id for emotion_react in diary.emotion_reacts]
+    available_reactions = [
+        emotion_react.emotion_id for emotion_react in diary.emotion_reacts
+    ]
 
     if diary_update.main_emotion_id not in available_reactions:
         return create_response(False, "Invalid emotion", None, HTTPStatus.BAD_REQUEST)

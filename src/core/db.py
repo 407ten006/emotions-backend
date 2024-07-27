@@ -8,7 +8,7 @@ if settings.ENVIRONMENT == "test":
         "sqlite:///test.db", connect_args={"check_same_thread": False}
     )
 else:
-    dbschema= 'db,pulic'
+    dbschema = "db,public"
 
     engine = create_engine(
         str(settings.SQLALCHEMY_DATABASE_URI),

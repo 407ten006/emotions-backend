@@ -41,8 +41,9 @@ async def test_update_me_내정보_업데이트(
     response_data = response.json()
     print(response_data)
 
+
 async def test_check_nickname(
-        async_client: AsyncClient, sample_user: User, login_sample_user: AuthToken
+    async_client: AsyncClient, sample_user: User, login_sample_user: AuthToken
 ):
 
     response = await async_client.post(

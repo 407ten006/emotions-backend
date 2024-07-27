@@ -50,7 +50,6 @@ class DiaryMonth(SQLModel):
     created_datetime: datetime = Field(default_factory=utc_now)
 
 
-
 class DiariesMonth(SQLModel):
     diaries: list[DiaryMonth]
 

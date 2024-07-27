@@ -63,6 +63,7 @@ async def check_nickname(nickname: str = Body(..., embed=True)):
         CheckNicknamePublic(is_valid=False).dict(),
     )
 
+
 @router.post(
     "/check-nickname2",
     status_code=status.HTTP_200_OK,
@@ -73,7 +74,6 @@ async def check_nickname_2(nickname: str = Body(..., embed=True)):
     with open(file_path, "r") as f:
         bad_words = f.read().split("\n")
 
-
     for bad_word in bad_words:
         if bad_word in nickname:
             return create_response(
@@ -82,11 +82,8 @@ async def check_nickname_2(nickname: str = Body(..., embed=True)):
                 CheckNicknamePublic(is_valid=False).dict(),
             )
 
-
     return create_response(
         True,
         "사용 가능한 닉네임이에요.",
         CheckNicknamePublic(is_valid=True).dict(),
     )
-
-
