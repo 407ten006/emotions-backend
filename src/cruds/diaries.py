@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
 from models.diaries import Diary, DiaryCreate
-from sqlmodel import Session, select, func
+from sqlmodel import Session, func, select
 
 
 async def get_today_diary(
@@ -31,6 +31,7 @@ async def get_diaries_by_month(
     statement = select(Diary).where(
         (Diary.created_datetime >= datetime(year, month, 1))
         & (Diary.created_datetime < datetime(year, month + 1, 1))
+        & (Diary.user_id == user_id)
     )
     return session.exec(statement).all()
 
