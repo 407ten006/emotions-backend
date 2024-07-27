@@ -72,6 +72,15 @@ async def get_diaries(
 
     month_diaries = []
     for diary in diaries:
+        if diary.chosen_emotion_id is None:
+            best_emotion = None
+            for emotion_react in diary.emotion_reacts:
+                if best_emotion is None or best_emotion.percent < emotion_react.percent:
+                    best_emotion = emotion_react
+
+            if best_emotion is not None:
+                diary.chosen_emotion_id = best_emotion.emotion_id
+
         month_diaries.append(DiaryMonth(
             id=diary.id,
             chosen_emotion_id=diary.chosen_emotion_id,
@@ -157,6 +166,15 @@ async def get_diary(session: SessionDep, current_user: CurrentUser, diary_id: in
 
     if diary is None:
         return create_response(False, "Error", None, HTTPStatus.NOT_FOUND)
+
+    if diary.chosen_emotion_id is None:
+        best_emotion = None
+        for emotion_react in diary.emotion_reacts:
+            if best_emotion is None or best_emotion.percent < emotion_react.percent:
+                best_emotion = emotion_react
+
+        if best_emotion is not None:
+            diary.chosen_emotion_id = best_emotion.emotion_id
 
     return create_response(
         True,
